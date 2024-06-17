@@ -16,22 +16,30 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.MapGet("/stations", () => new List<Station>{})
+.WithName("Stations")
+.WithOpenApi();
 
 app.MapGet("/stations/{id}",(int id) => new Station() { Id = id })
 .WithName("Station")
 .WithOpenApi();
 
-app.MapGet("/stations", () => new List<Station>{})
-.WithName("Stations")
+app.MapGet("/stations/{id}/depatures",(int id) => new List<Journey>{})
+.WithName("Station")
+.WithOpenApi();
+
+app.MapGet("/stations/{id}/returns",(int id) => new List<Journey>{})
+.WithName("Station")
+.WithOpenApi();
+
+app.MapGet("/journeys", () => new List<Journey>{})
+.WithName("Journeys")
 .WithOpenApi();
 
 app.MapGet("/journey/{id}",(int id) => new Journey() { Id = id })
 .WithName("Journey")
 .WithOpenApi();
 
-app.MapGet("/journeys", () => new List<Journey>{})
-.WithName("Journeys")
-.WithOpenApi();
 
 app.Run();
 class Station
