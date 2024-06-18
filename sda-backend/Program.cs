@@ -1,5 +1,8 @@
+using Microsoft.EntityFrameworkCore;
+
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<Context>();
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -16,48 +19,29 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/stations", () => new List<Station>{})
+app.MapGet("/stations", (Context db) => db.Stations.ToListAsync())
 .WithName("Stations")
 .WithOpenApi();
 
-app.MapGet("/stations/{id}",(int id) => new Station() { Id = id })
+app.MapGet("/stations/{id}",(int id, Context db) => db.Stations.FindAsync(id))
 .WithName("Station")
 .WithOpenApi();
 
-app.MapGet("/stations/{id}/depatures",(int id) => new List<Journey>{})
-.WithName("Station")
+app.MapGet("/stations/{id}/depatures",(int id, Context db) => db.Journeys.Where(j => j.Departure_Station_Id == id).ToListAsync())
+.WithName("Station depatures")
 .WithOpenApi();
 
-app.MapGet("/stations/{id}/returns",(int id) => new List<Journey>{})
-.WithName("Station")
+app.MapGet("/stations/{id}/returns",(int id, Context db) => db.Journeys.Where(j => j.Return_Station_Id == id).ToListAsync())
+.WithName("Station returns")
 .WithOpenApi();
 
-app.MapGet("/journeys", () => new List<Journey>{})
+app.MapGet("/journeys", (Context db) => db.Journeys.ToListAsync())
 .WithName("Journeys")
 .WithOpenApi();
 
-app.MapGet("/journey/{id}",(int id) => new Journey() { Id = id })
+app.MapGet("/journey/{id}",(int id, Context db) => db.Journeys.FindAsync(id))
 .WithName("Journey")
 .WithOpenApi();
 
 
 app.Run();
-class Station
-{
-    public int Id { get; set; }
-    public string? Name { get; set; }
-    public string? Station_Name { get; set; }
-    public string? Station_Address { get; set; }
-    public string? Coordinate_X { get; set; }
-    public string? Coordinate_Y { get; set; }
-}
-class Journey
-{
-    public int Id { get; set; }
-    public DateTime? Departure_Date_Time { get; set; }
-    public DateTime? Return_Date_Time { get; set; }
-    public int Departure_Station_Id { get; set; }
-    public int Return_Station_Id { get; set; }
-    public int? Distance { get; set; }
-    public int? Duration { get; set; }
-}
