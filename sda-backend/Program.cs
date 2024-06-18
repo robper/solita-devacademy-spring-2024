@@ -19,6 +19,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+/*
+TODO: Pagination for journeys
+*/
 app.MapGet("/stations", (Context db) => db.Stations.ToListAsync())
 .WithName("Stations")
 .WithOpenApi();
@@ -27,15 +30,23 @@ app.MapGet("/stations/{id}",(int id, Context db) => db.Stations.FindAsync(id))
 .WithName("Station")
 .WithOpenApi();
 
-app.MapGet("/stations/{id}/depatures",(int id, Context db) => db.Journeys.Where(j => j.Departure_Station_Id == id).ToListAsync())
+app.MapGet("/stations/{id}/depatures",(int id, Context db) => db.Journeys.Where(j => j.Departure_Station_Id == id).Take(100).ToListAsync())
 .WithName("Station depatures")
 .WithOpenApi();
 
-app.MapGet("/stations/{id}/returns",(int id, Context db) => db.Journeys.Where(j => j.Return_Station_Id == id).ToListAsync())
+app.MapGet("/stations/{id}/depatures/distance",(int id, Context db) => db.Journeys.Where(j => j.Departure_Station_Id == id).Average(j => j.Distance))
+.WithName("Avrage depature distance")
+.WithOpenApi();
+
+app.MapGet("/stations/{id}/depatures/duration",(int id, Context db) => db.Journeys.Where(j => j.Departure_Station_Id == id).Average(j => j.Duration))
+.WithName("Avrage depature duration")
+.WithOpenApi();
+
+app.MapGet("/stations/{id}/returns",(int id, Context db) => db.Journeys.Where(j => j.Return_Station_Id == id).Take(100).ToListAsync())
 .WithName("Station returns")
 .WithOpenApi();
 
-app.MapGet("/journeys", (Context db) => db.Journeys.ToListAsync())
+app.MapGet("/journeys", (Context db) => db.Journeys.Take(100).ToListAsync())
 .WithName("Journeys")
 .WithOpenApi();
 
