@@ -14,13 +14,13 @@ public class Station
     [Column("id")]
     public int Id { get; set; }
     [Column("station_name")]
-    public string? Station_Name { get; set; }
+    public string? Station_name { get; set; }
     [Column("station_address")]
-    public string? Station_Address { get; set; }
+    public string? Station_address { get; set; }
     [Column("coordinate_x")]
-    public string? Coordinate_X { get; set; }
+    public string? Coordinate_x { get; set; }
     [Column("coordinate_y")]
-    public string? Coordinate_Y { get; set; }
+    public string? Coordinate_y { get; set; }
 }
 [Table("journey")]
 public class Journey
@@ -28,13 +28,13 @@ public class Journey
     [Column("id")]
     public int Id { get; set; }
     [Column("departure_date_time")]
-    public DateTime? Departure_Date_Time { get; set; }
+    public DateTime? Departure_date_time { get; set; }
     [Column("return_date_time")]
-    public DateTime? Return_Date_Time { get; set; }
+    public DateTime? Return_date_time { get; set; }
     [Column("departure_station_id")]
-    public int? Departure_Station_Id { get; set; }
+    public int? Departure_station_id { get; set; }
     [Column("return_station_id")]
-    public int? Return_Station_Id { get; set; }
+    public int? Return_station_id { get; set; }
     [Column("distance")]
     public int? Distance { get; set; }
     [Column("duration")]
