@@ -6,6 +6,7 @@ interface Station {
     coordinate_y: string | null;
 }
 interface Journey {
+    id: number 
     departure_date_time: string | null;
     return_date_time: string | null;
     departure_station_id: number;
