@@ -39,7 +39,7 @@ app.MapGet("/stations/{id}", (int id, Context db) => db.Stations.FindAsync(id))
 .WithName("Station")
 .WithOpenApi();
 
-app.MapGet("/stations/{id}/depatures", (int id, Context db) => 
+app.MapGet("/stations/{id}/depatures", (int id, Context db) =>
     db.Journeys.Where(j => j.Departure_station_id == id).Take(100).ToListAsync())
 .WithName("Station depatures")
 .WithOpenApi();
@@ -50,12 +50,12 @@ app.MapGet("/stations/{id}/depatures/count", (int id, Context db) =>
 .WithOpenApi();
 
 app.MapGet("/stations/{id}/depatures/distance", (int id, Context db) =>
-    db.Journeys.Where(j => j.Departure_station_id == id).Average(j => j.Distance))
+    new { avg = db.Journeys.Where(j => j.Departure_station_id == id).Average(j => j.Distance) })
 .WithName("Avrage depature distance")
 .WithOpenApi();
 
 app.MapGet("/stations/{id}/depatures/duration", (int id, Context db) =>
-    db.Journeys.Where(j => j.Departure_station_id == id).Average(j => j.Duration))
+    new { avg = db.Journeys.Where(j => j.Departure_station_id == id).Average(j => j.Duration) })
 .WithName("Avrage depature duration")
 .WithOpenApi();
 
