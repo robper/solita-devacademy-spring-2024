@@ -1,3 +1,6 @@
+# Svelte
+.svelte-kit
+
 *.swp
 *.*~
 project.lock.json
