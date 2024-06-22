@@ -1,16 +1,15 @@
 export async function load({params}){
     console.log(params);
-    //let response = await fetch(`http://localhost:5221/stations/${params.station}`);
-    //let station = await response.json() as Station;
-    // Behöver inte lista alla depatures, bara antalet xd, så lägg till en endpoint på det, sen gör mer
-    // Kan göra /count för dist & dur på depatrues & returns
-    // Eller lägga den på /station endpoint
-	let journey_resp = await fetch(`http://localhost:5221/stations/${params.station}/depatures`);
-    console.log(journey_resp);
-    let journeys = await journey_resp.json() as Journey[];
-
+    let station = await fetch(`http://localhost:5221/stations/${params.station}`);
+    let dep_count = await fetch(`http://localhost:5221/stations/${params.station}/depatures/count`);
+    let dep_dist = await fetch(`http://localhost:5221/stations/${params.station}/depatures/distance`);
+    let dep_dur = await fetch(`http://localhost:5221/stations/${params.station}/depatures/duration`);
+    let ret_count = await fetch(`http://localhost:5221/stations/${params.station}/returns/count`);
 	return {
-	//		station: station,
-			journeys: journeys
+			station: await station.json() as Station,
+            depatures_count: (await dep_count.json()).count as number,
+            depatures_distance: (await dep_dist.json()).avg as number,
+            depatures_duration: (await dep_dur.json()).avg as number,
+            returns_count: (await ret_count.json()).count as number
 	};
 }
