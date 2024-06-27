@@ -6,7 +6,17 @@ class Context : DbContext
     public DbSet<Station> Stations { get; set; }
     public DbSet<Journey> Journeys { get; set; }
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseNpgsql("Host=127.0.0.1;Port=5432;Database=citybike;Username=academy;Password=academy");
+    {
+        
+        var host = Environment.GetEnvironmentVariable("DB_HOST");
+        var port = Environment.GetEnvironmentVariable("DB_PORT");
+        var username = Environment.GetEnvironmentVariable("DB_USER");
+        var password = Environment.GetEnvironmentVariable("DB_PW");
+
+        Console.WriteLine("DBHOST: " + host);
+        
+        optionsBuilder.UseNpgsql($"Host={host};Port={port};Database=citybike;Username={username};Password={password}");
+    }
 }
 [Table("station")]
 public class Station
