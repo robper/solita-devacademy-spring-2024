@@ -69,6 +69,10 @@ app.MapGet("/stations/{id}/returns/count", (int id, Context db) =>
 .WithName("Nr of station returns")
 .WithOpenApi();
 
+app.MapGet("/health", () =>
+{
+    return Results.Ok();
+});
 // app.MapGet("/journeys", (Context db) => db.Journeys.Take(100).ToListAsync())
 // .WithName("Journeys")
 // .WithOpenApi();
