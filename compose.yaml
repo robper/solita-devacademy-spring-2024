@@ -17,9 +17,18 @@ services:
     build: ./sda-backend/
     restart: always
     ports:
-      - "5221:8080"
+      - "5221:8080" # Expose the backend on host
     environment:
       DB_HOST: db
       DB_USER: academy
       DB_PW: academy
       DB_PORT: 5432
+  
+  frontend:
+    depends_on:
+      - backend
+    build: ./sda-frontend/
+    ports:
+      - "3000:3000"
+    environment:
+      PUBLIC_BACKEND_API: "http://backend:8080"
