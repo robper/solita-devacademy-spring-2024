@@ -19,7 +19,7 @@ services:
     ports:
       - "5221:8080"
     environment:
-      - DB_HOST=db
-      - DB_USER=academy
-      - DB_PW=academy
-      - DB_PORT=5432
+      DB_HOST: db
+      DB_USER: academy
+      DB_PW: academy
+      DB_PORT: 5432
