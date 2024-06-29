@@ -31,4 +31,4 @@ services:
     ports:
       - "3000:3000"
     environment:
-      PUBLIC_BACKEND_API: "http://backend:8080"
+      PUBLIC_BACKEND_API: "http://localhost:5221"
