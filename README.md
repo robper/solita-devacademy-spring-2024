@@ -1,6 +1,7 @@
 The original "assignment" is descripbed in the Readme in /db.
 I made this to refamiliarize myself with basic concepts, and to test doing somehting with a map on the frontend.
 
+Commit #[20f646](https://github.com/robper/solita-devacademy-spring-2024/tree/20f646fdc255b3baeb74398caa3528d8dea61dff) should match the minimum requirements laid out in the /db/README.
 
 # Deploy
 The entire project including db, backend & frontend, can be run using a docker compose file is provided.
