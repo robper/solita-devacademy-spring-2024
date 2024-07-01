@@ -69,5 +69,7 @@ docker run --env PUBLIC_BACKEND_API=http://localhost:5221 -p 3000:3000 sda-front
 - Pagination
 - Single station view, list all journeys + pagination
 - Docker secrets
-
+- Journeys as lines from start to stop for selected journey
+- CSS lib, Purecss
+- Sitebar to select/filter stations/journeys
 https://gist.github.com/aradalvand/04b2cad14b00e5ffe8ec96a3afbb34fb
