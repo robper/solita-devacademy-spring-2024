@@ -3,49 +3,61 @@
     import L from "leaflet";
     import { onMount } from "svelte";
     export let data;
-    let layers: L.Layer[] = [L.marker([51.6, 7.5])];
-    let initPos: L.LatLngExpression = [51.514244, 7.468429];
+    
+    let markers: L.Layer[] = [];
+    let initPos: L.LatLngExpression = [
+        Number(data.stations[0].coordinate_y),
+        Number(data.stations[0].coordinate_x),
+    ];
     let map: L.Map | undefined;
+    let singleView = false;
+
     onMount(() => {
         let tempLayers: L.Layer[] = [];
         data.stations.forEach((s) =>
             tempLayers.push(
-                L.marker([Number(s.coordinate_y), Number(s.coordinate_x)]).on(
-                    "click",
-                    () => console.log("click"),
-                    // Toggla något state som tar bort alla 
-                    // utom den som klickades på
-                    // Sen rita linjer från journeys
-                ),
+                L.marker([Number(s.coordinate_y), Number(s.coordinate_x)], {
+                    alt: s.station_name ?? "",
+                    title: s.station_name ?? "",
+                }).on({
+                    click: handleMarkerClick,
+                }),
             ),
         );
-        layers = layers.concat(tempLayers);
-        console.log(layers);
+        markers = markers.concat(tempLayers);
+        markers.forEach((layer) => map?.addLayer(layer));
     });
 
-    function flyto(){
-        map?.flyTo(initPos, 13)
+    function handleMarkerClick(event: L.LeafletMouseEvent) {
+        let marker = event.target as L.Marker;
+        if (singleView) {
+            // Re-add all markers and zoom out a bit
+            markers.forEach((layer) => map?.addLayer(layer));
+            map?.setZoom(12);
+        } else {
+            // Pan to selected marker
+            map?.flyTo(marker.getLatLng(), 15);
+            // Remove all markers
+            markers.forEach((lay) => map?.removeLayer(lay));
+            // Re-add selected marker
+            map?.addLayer(event.target);
+        }
+        singleView = !singleView;
     }
-    function addLayer() {
-        layers = [...layers, L.marker([51.64, 7.54])];
-    }
-    initPos = [
-        Number(data.stations[0].coordinate_y),
-        Number(data.stations[0].coordinate_x),
-    ] as L.LatLngExpression;
 </script>
 
 <svelte:head>
-    <title>MapLibre GL JS</title>
-    <meta name="description" content="MapLibre GL JS" />
+    <title>Map</title>
+    <meta name="description" content="Map" />
 </svelte:head>
 
-<button on:click={() => addLayer()}>Function {layers.length}</button>
-<button on:click={() => flyto()}>FlyTo</button>
+<button on:click={() => map?.flyTo(initPos, 10)}>Reset zoom</button>
 
-<button on:click={() => (layers = [...layers, L.marker([51.64, 7.54])])}>
-    Inline {layers.length}
+<button on:click={() => (markers = [...markers, L.marker([51.64, 7.54])])}>
+    Inline {markers.length}
 </button>
-<Map view={initPos} zoom={10} {layers} bind:map={map} />
+<Map view={initPos} zoom={10} bind:map />
+
+<!-- <Map view={initPos} zoom={10} {layers} bind:map /> -->
 
 <style></style>
