@@ -39,10 +39,19 @@ app.MapGet("/stations/{id}", (int id, Context db) => db.Stations.FindAsync(id))
 .WithName("Station")
 .WithOpenApi();
 
-// app.MapGet("/stations/{id}/depatures", (int id, Context db) =>
+// app.MapGet("/stations/{id}/depatures/", (int id, Context db) =>
 //     db.Journeys.Where(j => j.Departure_station_id == id).Take(100).ToListAsync())
 // .WithName("Station depatures")
 // .WithOpenApi();
+
+app.MapGet("/stations/{id}/depatures/returnstations", (int id, Context db) =>
+    db.Journeys.Where(j => j.Departure_station_id == id)
+    .GroupBy(s=> s.Return_station_id).Select(group => new {
+        return_station = group.Key,
+        count = group.Count()
+    }).OrderBy(e => e.count))
+.WithName("Station depatures")
+.WithOpenApi();
 
 app.MapGet("/stations/{id}/depatures/count", (int id, Context db) =>
     new { count = db.Journeys.Where(j => j.Departure_station_id == id).CountAsync().Result })
