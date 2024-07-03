@@ -39,8 +39,13 @@
     </div>
 </div>
 
+<svelte:head>
+    <title>Stations</title>
+    <meta name="description" content="Stations" />
+</svelte:head>
+
 <style>
-    #content {
+    /* #content {
         height: 100%;
         width: 50%;
         background-color: green;
@@ -49,5 +54,5 @@
         height: fit-content;
         width: 30%;
         background-color: pink;
-    }
+    } */
 </style>
