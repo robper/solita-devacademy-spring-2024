@@ -47,7 +47,7 @@
 
 <style>
     .map {
-        width: 90%;
-        height: 80vh;
+        width: auto;
+        height: 100%;
     }
 </style>

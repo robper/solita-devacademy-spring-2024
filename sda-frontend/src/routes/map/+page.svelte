@@ -3,7 +3,7 @@
     import L from "leaflet";
     import { onMount } from "svelte";
     export let data;
-    
+
     let markers: L.Layer[] = [];
     let initPos: L.LatLngExpression = [
         Number(data.stations[0].coordinate_y),
@@ -51,13 +51,29 @@
     <meta name="description" content="Map" />
 </svelte:head>
 
-<button on:click={() => map?.flyTo(initPos, 10)}>Reset zoom</button>
+<div id="content">
+    <!-- <div id="menu">
+        <button on:click={() => map?.flyTo(initPos, 10)}>Reset zoom</button>
 
-<button on:click={() => (markers = [...markers, L.marker([51.64, 7.54])])}>
-    Inline {markers.length}
-</button>
-<Map view={initPos} zoom={10} bind:map />
+        <button
+            on:click={() => (markers = [...markers, L.marker([51.64, 7.54])])}
+        >
+            Inline {markers.length}
+        </button>
+    </div> -->
+    <div id="map">
+        <Map view={initPos} zoom={10} bind:map />
+    </div>
+</div>
 
-<!-- <Map view={initPos} zoom={10} {layers} bind:map /> -->
-
-<style></style>
+<style>
+    #content {
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+    #map {
+        width: 100%;
+        height: 100%;
+    }
+</style>
