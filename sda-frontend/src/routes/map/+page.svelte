@@ -19,9 +19,17 @@
                 L.marker([Number(s.coordinate_y), Number(s.coordinate_x)], {
                     alt: s.station_name ?? "",
                     title: s.station_name ?? "",
-                }).on({
-                    click: handleMarkerClick,
-                }),
+                })
+                    .on({
+                        click: handleMarkerClick,
+                    })
+                    .bindPopup(
+                        "<p>" +
+                            s.station_name +
+                            "</p><p>" +
+                            s.station_address +
+                            "</p>",
+                    ),
             ),
         );
         markers = markers.concat(tempLayers);
@@ -33,7 +41,7 @@
         if (singleView) {
             // Re-add all markers and zoom out a bit
             markers.forEach((layer) => map?.addLayer(layer));
-            map?.setZoom(12);
+            map?.setZoom(11);
         } else {
             // Pan to selected marker
             map?.flyTo(marker.getLatLng(), 15);
@@ -62,7 +70,7 @@
         </button>
     </div> -->
     <div id="map">
-        <Map view={initPos} zoom={10} bind:map />
+        <Map view={initPos} zoom={11} bind:map />
     </div>
 </div>
 
