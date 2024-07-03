@@ -11,7 +11,8 @@
     ];
     let map: L.Map | undefined;
     let singleView = false;
-
+    let inpval = "";
+    let selectval: string;
     onMount(() => {
         let tempLayers: L.Layer[] = [];
         data.stations.forEach((s) =>
@@ -24,9 +25,11 @@
                         click: handleMarkerClick,
                     })
                     .bindPopup(
-                        "<p>" +
+                        "<p><a href=/stations/" +
+                            s.id +
+                            ">" +
                             s.station_name +
-                            "</p><p>" +
+                            "</a></p><p>" +
                             s.station_address +
                             "</p>",
                     ),
@@ -52,6 +55,12 @@
         }
         singleView = !singleView;
     }
+    $: {
+        console.log("input--val: " + inpval);
+    }
+    $: console.log("select--val: " + selectval);
+    // Kan göra en groupby i backen och bara skicka ut vilka som som faktiskt går mellan
+    // Sen typ en siffra på linen som säger hur många. Ja
 </script>
 
 <svelte:head>
@@ -60,15 +69,20 @@
 </svelte:head>
 
 <div id="content">
-    <!-- <div id="menu">
-        <button on:click={() => map?.flyTo(initPos, 10)}>Reset zoom</button>
-
-        <button
-            on:click={() => (markers = [...markers, L.marker([51.64, 7.54])])}
-        >
-            Inline {markers.length}
-        </button>
-    </div> -->
+    <div id="sidebar">
+        <div id="menu">
+            <button on:click={() => map?.flyTo(initPos, 10)}>Reset zoom</button>
+        </div>
+        <form>
+            <select bind:value={selectval}>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+            </select>
+            <input bind:value={inpval} placeholder="Search" />
+            <p>{inpval}</p>
+        </form>
+    </div>
     <div id="map">
         <Map view={initPos} zoom={11} bind:map />
     </div>
@@ -79,6 +93,10 @@
         height: 100%;
         width: 100%;
         overflow: hidden;
+        display: flex;
+    }
+    #sidebar {
+        min-width: 100px;
     }
     #map {
         width: 100%;
