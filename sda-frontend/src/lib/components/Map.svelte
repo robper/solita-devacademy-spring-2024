@@ -8,8 +8,6 @@
     export let view: L.LatLngExpression = [59.3308025, 18.0573745];
     // Initial zoom
     export let zoom: number | undefined = 7;
-    // Layers to present on the map
-    export let layers: L.Layer[] | undefined = undefined;
     // Export the map so we can modify it in the referencing component
     export let map: L.Map | undefined;
     let mapElement: HTMLDivElement;
@@ -29,14 +27,11 @@
         map = undefined;
     });
 
+    // Context allows us to have multiple instances of this component
     setContext("map", {
         getMap: () => map,
     });
 
-    $: if (map) {
-        layers?.forEach((f) => f.removeFrom(map as L.Map));
-        layers?.forEach((f) => f.addTo(map as L.Map));
-    }
 </script>
 
 <div class="map" bind:this={mapElement}>
