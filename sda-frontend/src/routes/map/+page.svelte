@@ -1,7 +1,6 @@
 <script lang="ts">
     import Map from "$lib/components/Map.svelte";
     import L, {
-        layerGroup,
         LayerGroup,
         Polyline,
         type LatLngExpression,
@@ -13,12 +12,12 @@
     // Extend the Marker class to hold which station it represents
     // This way we don't have to have a dictionary to translate them between layer id:station id
     export class StationMarker extends L.Marker {
-        station_id: Number | undefined;
+        stationId: Number | undefined;
         constructor(latLng: LatLngExpression, options?: L.MarkerOptions) {
             super(latLng, options);
         }
         setStationId(id: Number): this {
-            this.station_id = id;
+            this.stationId = id;
             return this;
         }
     }
@@ -28,8 +27,8 @@
         Number(data.stations[0].coordinate_x),
     ];
     let map: L.Map | undefined;
-    let inpval = "";
-    let selectval: string;
+    let inpVal = "";
+    let selectVal: string;
     // This could be done using StationMarker[] as well, but LG can be used as controller in the future
     const layers: LayerGroup = new LayerGroup();
     const marker_station_map: { [layer_id: number]: number } = {}; // För att hitta rätt ?
@@ -41,7 +40,7 @@
 
     onMount(() => {
         data.stations.forEach((s) => {
-            let m = new StationMarker(
+            let marker = new StationMarker(
                 [Number(s.coordinate_y), Number(s.coordinate_x)],
                 {
                     alt: s.station_name ?? "",
@@ -49,7 +48,7 @@
                 },
             ).setStationId(s.id);
 
-            let p = L.popup({}, m).setContent(
+            let p = L.popup({}, marker).setContent(
                 "<p><a href=/stations/" +
                     s.id +
                     ">" +
@@ -60,62 +59,49 @@
                     s.station_address +
                     "</p>",
             );
-            m.bindPopup(p);
-            layers.addLayer(m);
+            marker.bindPopup(p);
+            layers.addLayer(marker);
 
             // Instead of event handlers we could set some state in these, ex: singleView=true & selectedMarker = n
             // And react to them using $
-            m.on("popupopen", async (event) => {
+            marker.on("popupopen", async (event) => {
                 console.log("Marker.on(popup_open)", event);
                 let marker = event.target as StationMarker;
                 console.log("Marker: ", marker);
-                console.log("Marker station-id: ", marker.station_id);
+                console.log("Marker station-id: ", marker.stationId);
 
                 map?.flyTo(marker.getLatLng(), 15);
 
                 // Fetch return stations
-                let ret_stations_resp = await fetch(
-                    `${env.PUBLIC_BACKEND_API}/stations/${marker.station_id}/depatures/returnstations`,
+                let returnStationsResp = await fetch(
+                    `${env.PUBLIC_BACKEND_API}/stations/${marker.stationId}/depatures/returnstations`,
                 );
-                let ret_stations: Returnstation[] =
-                    await ret_stations_resp.json();
-                console.log("Returnstations: ", ret_stations);
-                console.log("ANTAL Returnstations: ", ret_stations.length);
+                let returnStations: Returnstation[] =
+                    await returnStationsResp.json();
+                console.log("# Returnstations: ", returnStations.length);
 
-                // Remove all markers except selected
+                // Remove all markers except the one selected
                 layers.eachLayer((layer) => {
-                    let s_id = (layer as StationMarker).station_id;
-                    let ret_station = ret_stations.find(
-                        (r) => r.return_station === s_id,
+                    let stationId = (layer as StationMarker).stationId;
+                    let returnStation = returnStations.find(
+                        (r) => r.return_station === stationId,
                     );
-                    if (layer === marker || ret_station) {
+                    if (layer === marker || returnStation) {
                         //console.log("keep", s_id, ret_station?.return_station);
                     } else {
                         map?.removeLayer(layer);
                     }
                 });
-                // Draw them
-                ret_stations.forEach((rs) => {
-                    // Här måste jag hitta rätt marker för return station idt och hämta lat lng för dom
-                    // Det vore ju betydligt snabbare om jag hade kvar dicten lol
-                    //let returnStationMarker = findStationMarker(rs.return_station);
+                // Draw lines between them
+                returnStations.forEach((rs) => {
+                    // Find the the marker which belongs to the return station
                     let returnStationMarker = layers
                         .getLayers()
                         .find(
-                            (_lay) =>
-                                (_lay as StationMarker).station_id ===
+                            (layer) =>
+                                (layer as StationMarker).stationId ===
                                 rs.return_station,
                         ) as StationMarker;
-                    console.log(
-                        "returnstationamrker",
-                        returnStationMarker.getLatLng().lat,
-                    );
-                    console.log(
-                        "returnstationamrker",
-                        returnStationMarker.getLatLng().lng,
-                    );
-                    console.log("marker", marker.getLatLng().lat);
-                    console.log("marker", marker.getLatLng().lng);
                     let mLat = marker.getLatLng().lat;
                     let mLng = marker.getLatLng().lng;
                     let rLat = returnStationMarker.getLatLng().lat;
@@ -135,7 +121,7 @@
                 console.log("done");
             });
 
-            m.on("popupclose", (event) => {
+            marker.on("popupclose", (event) => {
                 console.log("Marker.on(popup_close)", event);
                 layers.eachLayer((layer) => {
                     if (layer === event.target) {
@@ -149,9 +135,9 @@
         map?.addLayer(layers);
     });
     $: {
-        console.log("input--val: " + inpval);
+        console.log("input--val: " + inpVal);
     }
-    $: console.log("select--val: " + selectval);
+    $: console.log("select--val: " + selectVal);
 </script>
 
 <svelte:head>
@@ -165,14 +151,14 @@
             <button on:click={() => map?.flyTo(initPos, 10)}>Reset zoom</button>
         </div>
         <form>
-            <select bind:value={selectval}>
+            <select bind:value={selectVal}>
                 <option>1</option>
                 <option>2</option>
                 <option>3</option>
             </select>
-            <input bind:value={inpval} placeholder="Search station" />
-            <input bind:value={inpval} placeholder="Has return station" />
-            <p>{inpval}</p>
+            <input bind:value={inpVal} placeholder="Search station" />
+            <input bind:value={inpVal} placeholder="Has return station" />
+            <p>{inpVal}</p>
         </form>
         <p>{layers.getLayers().length}</p>
     </div>
