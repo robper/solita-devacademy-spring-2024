@@ -101,6 +101,9 @@
             markers.addLayer(marker);
 
             marker.on("popupopen", async (event) => {
+                // Stop moving the view
+                // Else it will be janky if we select another marker while one is selected
+                map?.stop();
                 console.log("Marker.on(popup_open)", event);
                 let targetMarker = event.target as StationMarker;
                 console.log("Marker: ", targetMarker);
