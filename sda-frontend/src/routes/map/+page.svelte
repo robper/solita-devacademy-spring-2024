@@ -3,6 +3,7 @@
     import L, {
         LayerGroup,
         Polyline,
+        Popup,
         type LatLngExpression,
     } from "leaflet";
     import { onMount } from "svelte";
@@ -30,7 +31,8 @@
     let inpVal = "";
     let selectVal: string;
     // This could be done using StationMarker[] as well, but LG can be used as controller in the future
-    const layers: LayerGroup = new LayerGroup();
+    const markers: LayerGroup = new LayerGroup();
+    const lines: LayerGroup = new LayerGroup();
     const marker_station_map: { [layer_id: number]: number } = {}; // För att hitta rätt ?
 
     interface Returnstation {
@@ -38,101 +40,115 @@
         count: number;
     }
 
-    onMount(() => {
-        data.stations.forEach((s) => {
-            let marker = new StationMarker(
-                [Number(s.coordinate_y), Number(s.coordinate_x)],
-                {
-                    alt: s.station_name ?? "",
-                    title: s.station_name ?? "",
-                },
-            ).setStationId(s.id);
+    function createStationMarker(station: Station): StationMarker {
+        return new StationMarker(
+            [Number(station.coordinate_y), Number(station.coordinate_x)],
+            {
+                alt: station.station_name ?? "",
+                title: station.station_name ?? "",
+            },
+        ).setStationId(station.id);
+    }
+    function createPopup(station: Station): Popup {
+        return L.popup({}).setContent(
+            "<p><a href=/stations/" +
+                station.id +
+                ">" +
+                station.station_name +
+                " " +
+                station.id +
+                "</a></p><p>" +
+                station.station_address +
+                "</p>",
+        );
+    }
+    function createPolyLine(
+        destinationMarker: StationMarker,
+        returnStation: Returnstation,
+    ): Polyline {
+        // Find the the marker which belongs to the return station
+        let returnStationMarker = markers
+            .getLayers()
+            .find(
+                (layer) =>
+                    (layer as StationMarker).stationId ===
+                    returnStation.return_station,
+            ) as StationMarker;
 
-            let p = L.popup({}, marker).setContent(
-                "<p><a href=/stations/" +
-                    s.id +
-                    ">" +
-                    s.station_name +
-                    " " +
-                    s.id +
-                    "</a></p><p>" +
-                    s.station_address +
-                    "</p>",
-            );
-            marker.bindPopup(p);
-            layers.addLayer(marker);
+        return new Polyline(
+            [
+                [
+                    destinationMarker.getLatLng().lat,
+                    destinationMarker.getLatLng().lng,
+                ],
+                [
+                    returnStationMarker.getLatLng().lat,
+                    returnStationMarker.getLatLng().lng,
+                ],
+            ],
+            { color: "red" },
+        );
+    }
+    onMount(() => {
+        data.stations.forEach((station) => {
+            let marker = createStationMarker(station);
+            let popup = createPopup(station);
+            marker.bindPopup(popup);
+            markers.addLayer(marker);
 
             // Instead of event handlers we could set some state in these, ex: singleView=true & selectedMarker = n
             // And react to them using $
             marker.on("popupopen", async (event) => {
                 console.log("Marker.on(popup_open)", event);
-                let marker = event.target as StationMarker;
-                console.log("Marker: ", marker);
-                console.log("Marker station-id: ", marker.stationId);
+                let targetMarker = event.target as StationMarker;
+                console.log("Marker: ", targetMarker);
+                console.log("Marker station-id: ", targetMarker.stationId);
 
-                map?.flyTo(marker.getLatLng(), 15);
+                map?.flyTo(targetMarker.getLatLng(), 15);
 
                 // Fetch return stations
                 let returnStationsResp = await fetch(
-                    `${env.PUBLIC_BACKEND_API}/stations/${marker.stationId}/depatures/returnstations`,
+                    `${env.PUBLIC_BACKEND_API}/stations/${targetMarker.stationId}/depatures/returnstations`,
                 );
                 let returnStations: Returnstation[] =
                     await returnStationsResp.json();
                 console.log("# Returnstations: ", returnStations.length);
 
                 // Remove all markers except the one selected
-                layers.eachLayer((layer) => {
+                markers.eachLayer((layer) => {
                     let stationId = (layer as StationMarker).stationId;
                     let returnStation = returnStations.find(
                         (r) => r.return_station === stationId,
                     );
-                    if (layer === marker || returnStation) {
-                        //console.log("keep", s_id, ret_station?.return_station);
-                    } else {
+                    if (!(layer === targetMarker || returnStation)) {
                         map?.removeLayer(layer);
                     }
                 });
                 // Draw lines between them
-                returnStations.forEach((rs) => {
-                    // Find the the marker which belongs to the return station
-                    let returnStationMarker = layers
-                        .getLayers()
-                        .find(
-                            (layer) =>
-                                (layer as StationMarker).stationId ===
-                                rs.return_station,
-                        ) as StationMarker;
-                    let mLat = marker.getLatLng().lat;
-                    let mLng = marker.getLatLng().lng;
-                    let rLat = returnStationMarker.getLatLng().lat;
-                    let rLng = returnStationMarker.getLatLng().lng;
-                    let line = new Polyline(
-                        [
-                            [mLat, mLng],
-                            [rLat, rLng],
-                        ],
-                        { color: "red" },
-                    ).addTo(map);
+                returnStations.forEach((returnStation) => {
+                    createPolyLine(targetMarker, returnStation).addTo(lines);
                     // Lägg till dom i en featuregroup eller nåt så vi enkelt kan ta bort
                     // https://github.com/IvanSanchez/Leaflet.Polyline.SnakeAnim
                     // Kan lägga till en punkt i mitten så den blir lite ovan eller under, så linjen blir "bågig"
-                    //map?.addLayer(line);
                 });
+                map?.addLayer(lines);
                 console.log("done");
             });
 
             marker.on("popupclose", (event) => {
                 console.log("Marker.on(popup_close)", event);
-                layers.eachLayer((layer) => {
+                markers.eachLayer((layer) => {
                     if (layer === event.target) {
                     } else {
                         map?.addLayer(layer);
                     }
                 });
-                map?.setZoom(10);
+                map?.setZoom(11);
+                lines.clearLayers();
             });
         });
-        map?.addLayer(layers);
+        map?.addLayer(markers);
+        
     });
     $: {
         console.log("input--val: " + inpVal);
@@ -160,7 +176,6 @@
             <input bind:value={inpVal} placeholder="Has return station" />
             <p>{inpVal}</p>
         </form>
-        <p>{layers.getLayers().length}</p>
     </div>
     <div id="map">
         <Map view={initPos} zoom={11} bind:map />
