@@ -29,7 +29,6 @@
     ];
     let map: L.Map | undefined;
     let inpVal = "";
-    let selectVal: string;
     // This could be done using StationMarker[] as well, but LG can be used as controller in the future
     const markers: FeatureGroup = new FeatureGroup();
     const lines: FeatureGroup = new FeatureGroup();
@@ -92,11 +91,15 @@
         data.stations.forEach((station) => {
             let marker = createStationMarker(station);
             let popup = createPopup(station);
+            let tooltip = new L.Tooltip({
+                content: "<strong>" + station.station_name + "<strong>",
+                // direction: 'center',
+                // offset: [-14, -30]
+            });
+            marker.bindTooltip(tooltip);
             marker.bindPopup(popup);
             markers.addLayer(marker);
 
-            // Instead of event handlers we could set some state in these, ex: singleView=true & selectedMarker = n
-            // And react to them using $
             marker.on("popupopen", async (event) => {
                 console.log("Marker.on(popup_open)", event);
                 let targetMarker = event.target as StationMarker;
@@ -113,39 +116,45 @@
 
                 // Remove all markers except the one selected
                 markers.eachLayer((layer) => {
-                    let stationId = (layer as StationMarker).stationId;
                     let returnStation = returnStations.find(
-                        (r) => r.return_station === stationId,
+                        (r) =>
+                            r.return_station ===
+                            (layer as StationMarker).stationId,
                     );
                     if (!(layer === targetMarker || returnStation)) {
-                        map?.removeLayer(layer);
+                        (layer as StationMarker).setOpacity(0.4);
+                    } else {
+                        (layer as StationMarker).setOpacity(1);
                     }
                 });
                 // Draw lines between them
+                map?.addLayer(lines);
                 returnStations.forEach((returnStation) => {
                     createPolyLine(targetMarker, returnStation).addTo(lines);
-                    // Lägg till dom i en featuregroup eller nåt så vi enkelt kan ta bort
                     // https://github.com/IvanSanchez/Leaflet.Polyline.SnakeAnim
-                    // Kan lägga till en punkt i mitten så den blir lite ovan eller under, så linjen blir "bågig"
                 });
-                map?.addLayer(lines);
-                map?.fitBounds(lines.getBounds());
+                map?.flyToBounds(lines.getBounds(), {
+                    padding: [20, 20],
+                    animate: true,
+                });
+                inpVal = "";
             });
 
             marker.on("popupclose", (event) => {
                 console.log("Marker.on(popup_close)", event);
+                lines.clearLayers();
+                map?.flyToBounds(markers.getBounds());
                 markers.eachLayer((layer) => {
                     if (layer === event.target) {
                     } else {
-                        map?.addLayer(layer);
+                        (layer as StationMarker).setOpacity(1);
                     }
                 });
-                lines.clearLayers();
-                map?.fitBounds(markers.getBounds());
+                inpVal = "";
             });
         });
         map?.addLayer(markers);
-        map?.fitBounds(markers.getBounds());
+        map?.flyToBounds(markers.getBounds());
     });
     $: {
         console.log("search--val: " + inpVal);
@@ -157,7 +166,6 @@
             }
         });
     }
-    $: console.log("select--val: " + selectVal);
 </script>
 
 <svelte:head>
@@ -171,15 +179,16 @@
             <button on:click={() => map?.flyTo(initPos, 10)}>Reset zoom</button>
         </div>
         <form>
-            <select bind:value={selectVal}>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-            </select>
             <input bind:value={inpVal} placeholder="Search station" />
             <input bind:value={inpVal} placeholder="Has return station" />
             <p>{inpVal}</p>
         </form>
+        <ul>
+            <li><strong>selected</strong></li>
+            <li>Return 1</li>
+            <li>Return 2</li>
+            <li>Return 3</li>
+        </ul>
     </div>
     <div id="map">
         <Map view={initPos} zoom={11} bind:map />
