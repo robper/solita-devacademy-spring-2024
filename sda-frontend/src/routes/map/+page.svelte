@@ -2,7 +2,6 @@
     import Map from "$lib/components/Map.svelte";
     import L, {
         FeatureGroup,
-        LayerGroup,
         Polyline,
         Popup,
         type LatLngExpression,
@@ -34,7 +33,6 @@
     // This could be done using StationMarker[] as well, but LG can be used as controller in the future
     const markers: FeatureGroup = new FeatureGroup();
     const lines: FeatureGroup = new FeatureGroup();
-    const marker_station_map: { [layer_id: number]: number } = {}; // För att hitta rätt ?
 
     interface Returnstation {
         return_station: number;
@@ -131,8 +129,7 @@
                     // Kan lägga till en punkt i mitten så den blir lite ovan eller under, så linjen blir "bågig"
                 });
                 map?.addLayer(lines);
-                map?.fitBounds(lines.getBounds())
-                console.log("done");
+                map?.fitBounds(lines.getBounds());
             });
 
             marker.on("popupclose", (event) => {
@@ -144,14 +141,21 @@
                     }
                 });
                 lines.clearLayers();
-                map?.fitBounds(markers.getBounds())
+                map?.fitBounds(markers.getBounds());
             });
         });
         map?.addLayer(markers);
         map?.fitBounds(markers.getBounds());
     });
     $: {
-        console.log("input--val: " + inpVal);
+        console.log("search--val: " + inpVal);
+        markers?.eachLayer((m) => {
+            if (!(m as L.Marker).options.title?.startsWith(inpVal)) {
+                (m as StationMarker).setOpacity(0);
+            } else {
+                (m as StationMarker).setOpacity(1);
+            }
+        });
     }
     $: console.log("select--val: " + selectVal);
 </script>
