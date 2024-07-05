@@ -1,6 +1,7 @@
 <script lang="ts">
     import Map from "$lib/components/Map.svelte";
     import L, {
+        FeatureGroup,
         LayerGroup,
         Polyline,
         Popup,
@@ -31,8 +32,8 @@
     let inpVal = "";
     let selectVal: string;
     // This could be done using StationMarker[] as well, but LG can be used as controller in the future
-    const markers: LayerGroup = new LayerGroup();
-    const lines: LayerGroup = new LayerGroup();
+    const markers: FeatureGroup = new FeatureGroup();
+    const lines: FeatureGroup = new FeatureGroup();
     const marker_station_map: { [layer_id: number]: number } = {}; // För att hitta rätt ?
 
     interface Returnstation {
@@ -104,8 +105,6 @@
                 console.log("Marker: ", targetMarker);
                 console.log("Marker station-id: ", targetMarker.stationId);
 
-                map?.flyTo(targetMarker.getLatLng(), 15);
-
                 // Fetch return stations
                 let returnStationsResp = await fetch(
                     `${env.PUBLIC_BACKEND_API}/stations/${targetMarker.stationId}/depatures/returnstations`,
@@ -132,6 +131,7 @@
                     // Kan lägga till en punkt i mitten så den blir lite ovan eller under, så linjen blir "bågig"
                 });
                 map?.addLayer(lines);
+                map?.fitBounds(lines.getBounds())
                 console.log("done");
             });
 
@@ -143,12 +143,12 @@
                         map?.addLayer(layer);
                     }
                 });
-                map?.setZoom(11);
                 lines.clearLayers();
+                map?.fitBounds(markers.getBounds())
             });
         });
         map?.addLayer(markers);
-        
+        map?.fitBounds(markers.getBounds());
     });
     $: {
         console.log("input--val: " + inpVal);
