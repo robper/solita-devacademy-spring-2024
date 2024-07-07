@@ -28,9 +28,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-/*
-TODO: Pagination for journeys
-*/
 app.MapGet("/stations", (Context db) => db.Stations.OrderBy(s => s.Id).ToListAsync())
 .WithName("Stations")
 .WithOpenApi();
@@ -39,10 +36,14 @@ app.MapGet("/stations/{id}", (int id, Context db) => db.Stations.FindAsync(id))
 .WithName("Station")
 .WithOpenApi();
 
-// app.MapGet("/stations/{id}/depatures", (int id, Context db) =>
-//     db.Journeys.Where(j => j.Departure_station_id == id).Take(100).ToListAsync())
-// .WithName("Station depatures")
-// .WithOpenApi();
+app.MapGet("/stations/{id}/depatures/returnstations", (int id, Context db) =>
+    db.Journeys.Where(j => j.Departure_station_id == id)
+    .GroupBy(s=> s.Return_station_id).Select(group => new {
+        return_station = group.Key,
+        count = group.Count()
+    }).OrderBy(e => e.count))
+.WithName("Station depatures")
+.WithOpenApi();
 
 app.MapGet("/stations/{id}/depatures/count", (int id, Context db) =>
     new { count = db.Journeys.Where(j => j.Departure_station_id == id).CountAsync().Result })
@@ -51,18 +52,13 @@ app.MapGet("/stations/{id}/depatures/count", (int id, Context db) =>
 
 app.MapGet("/stations/{id}/depatures/distance", (int id, Context db) =>
     new { avg = db.Journeys.Where(j => j.Departure_station_id == id).Average(j => j.Distance) })
-.WithName("Avrage depature distance")
+.WithName("Average depature distance")
 .WithOpenApi();
 
 app.MapGet("/stations/{id}/depatures/duration", (int id, Context db) =>
     new { avg = db.Journeys.Where(j => j.Departure_station_id == id).Average(j => j.Duration) })
-.WithName("Avrage depature duration")
+.WithName("Average depature duration")
 .WithOpenApi();
-
-// app.MapGet("/stations/{id}/returns", (int id, Context db) =>
-//     db.Journeys.Where(j => j.Return_station_id == id).Take(100).ToListAsync())
-// .WithName("Station returns")
-// .WithOpenApi();
 
 app.MapGet("/stations/{id}/returns/count", (int id, Context db) =>
     new { count = db.Journeys.Where(j => j.Return_station_id == id).CountAsync().Result })
@@ -73,13 +69,5 @@ app.MapGet("/health", () =>
 {
     return Results.Ok();
 });
-// app.MapGet("/journeys", (Context db) => db.Journeys.Take(100).ToListAsync())
-// .WithName("Journeys")
-// .WithOpenApi();
-
-// app.MapGet("/journey/{id}", (int id, Context db) => db.Journeys.FindAsync(id))
-// .WithName("Journey")
-// .WithOpenApi();
-
 
 app.Run();
