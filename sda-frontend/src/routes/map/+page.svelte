@@ -29,14 +29,12 @@
     ];
     let map: L.Map | undefined;
     let inpVal = "";
-    // This could be done using StationMarker[] as well, but LG can be used as controller in the future
+    let selectedStation: StationMarker | undefined = undefined;
+    let visibleReturnStations: [station: StationMarker, nrOfTrips: Number][] =
+        [];
+
     const markers: FeatureGroup = new FeatureGroup();
     const lines: FeatureGroup = new FeatureGroup();
-
-    interface Returnstation {
-        return_station: number;
-        count: number;
-    }
 
     function createStationMarker(station: Station): StationMarker {
         return new StationMarker(
@@ -106,6 +104,7 @@
                 map?.stop();
                 console.log("Marker.on(popup_open)", event);
                 let targetMarker = event.target as StationMarker;
+                selectedStation = targetMarker;
                 console.log("Marker: ", targetMarker);
                 console.log("Marker station-id: ", targetMarker.stationId);
 
@@ -124,12 +123,18 @@
                             r.return_station ===
                             (layer as StationMarker).stationId,
                     );
-                    if (!(layer === targetMarker || returnStation)) {
-                        (layer as StationMarker).setOpacity(0.4);
-                    } else {
+                    if (layer === targetMarker || returnStation) {
                         (layer as StationMarker).setOpacity(1);
+                        visibleReturnStations.push([
+                            layer as StationMarker,
+                            Number(returnStation?.count),
+                        ]);
+                    } else {
+                        (layer as StationMarker).setOpacity(0.4);
                     }
                 });
+                // Have to re-assign the array to 'force' reactivity on it
+                visibleReturnStations = visibleReturnStations;
                 // Draw lines between them
                 map?.addLayer(lines);
                 returnStations.forEach((returnStation) => {
@@ -145,6 +150,8 @@
 
             marker.on("popupclose", (event) => {
                 console.log("Marker.on(popup_close)", event);
+                selectedStation = undefined;
+                visibleReturnStations = [];
                 lines.clearLayers();
                 map?.flyToBounds(markers.getBounds());
                 markers.eachLayer((layer) => {
@@ -158,16 +165,33 @@
         });
         map?.addLayer(markers);
         map?.flyToBounds(markers.getBounds());
+        // DEV / TEST
+        selectedStation = markers.getLayers()[0] as StationMarker;
+        selectedStation.openPopup();
     });
+    // Search/filter station function
     $: {
         console.log("search--val: " + inpVal);
-        markers?.eachLayer((m) => {
-            if (!(m as L.Marker).options.title?.startsWith(inpVal)) {
-                (m as StationMarker).setOpacity(0);
-            } else {
-                (m as StationMarker).setOpacity(1);
-            }
-        });
+        // To stop overriding opacity when clicking a filtered marker
+        if (inpVal) {
+            markers?.eachLayer((m) => {
+                if (
+                    !(m as L.Marker).options.title
+                        ?.toLowerCase()
+                        .startsWith(inpVal.toLowerCase())
+                ) {
+                    // Här är dom osynliga, men man kan nädå hovra
+                    (m as StationMarker).setOpacity(0);
+                } else {
+                    (m as StationMarker).setOpacity(1);
+                }
+            });
+        }
+    }
+    function sortByNrOfTrips(
+        arr: [station: StationMarker, nrOfTrips: Number][],
+    ): [StationMarker, Number][] {
+        return arr.sort((a, b) => (a[1] > b[1] ? -1 : 1));
     }
 </script>
 
@@ -178,20 +202,57 @@
 
 <div id="content">
     <div id="sidebar">
-        <div id="menu">
-            <button on:click={() => map?.flyTo(initPos, 10)}>Reset zoom</button>
+        <div id="search">
+            <label for="stationSearch">Find station</label>
+            <input
+                id="stationSearch"
+                bind:value={inpVal}
+                placeholder="Search..."
+            />
+            <br style="clear:both;" />
         </div>
-        <form>
-            <input bind:value={inpVal} placeholder="Search station" />
-            <input bind:value={inpVal} placeholder="Has return station" />
-            <p>{inpVal}</p>
-        </form>
-        <ul>
-            <li><strong>selected</strong></li>
-            <li>Return 1</li>
-            <li>Return 2</li>
-            <li>Return 3</li>
-        </ul>
+        <p>{inpVal}</p>
+
+        <div id="stationList">
+            {#if selectedStation}
+                <ul>
+                    <h2>
+                        <a href="/stations/{selectedStation.stationId}">
+                            {selectedStation.options.title}
+                        </a>
+                    </h2>
+                    <p>
+                        Has trips ending at {visibleReturnStations.length} stations
+                    </p>
+                    <table>
+                        <th id="stationCol">Station</th>
+                        <th id="returnsCol">Nr of trips</th>
+
+                        {#each sortByNrOfTrips(visibleReturnStations) as returnStation}
+                            <tr>
+                                <td id="stationCol">
+                                    <a href="/stations/{returnStation[0]
+                                            .stationId}">
+                                        {returnStation[0].options.title}
+                                    </a>
+                                </td>
+                                <td id="returnsCol">
+                                    {returnStation[1]}
+                                </td>
+                            </tr>
+                        {/each}
+                    </table>
+                    <!-- {#each sortByNrOfTrips(visibleReturnStations) as returnStation}
+                        <li>
+                            <a href="/stations/{returnStation[0].stationId}"
+                                >{returnStation[0].options.title}
+                            </a>
+                            {returnStation[1]} trips
+                        </li>
+                    {/each} -->
+                </ul>
+            {/if}
+        </div>
     </div>
     <div id="map">
         <Map view={initPos} zoom={11} bind:map />
@@ -206,10 +267,43 @@
         display: flex;
     }
     #sidebar {
-        min-width: 100px;
+        min-width: 200px;
+        width: 15%;
+        overflow: auto;
+        padding: 10px;
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    #search {
+        display: flex;
+        gap: 3px;
+        flex-direction: column;
+        justify-content: center;
     }
     #map {
         width: 100%;
         height: 100%;
+    }
+    ul {
+        list-style-type: none;
+        padding-left: 0px;
+    }
+    ul li {
+        padding-bottom: 3px;
+    }
+    table {
+        table-layout: fixed;
+        width: 100%;
+    }
+    #returnsCol {
+        text-align: right;
+        text-overflow: ellipsis;
+    }
+    #stationCol {
+        text-align: left;
+        text-overflow: ellipsis;
+        width: 60%;
+        white-space: nowrap;
+        overflow: hidden;
     }
 </style>

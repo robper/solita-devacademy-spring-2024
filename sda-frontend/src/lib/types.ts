@@ -14,3 +14,7 @@ interface Journey {
     distance: number 
     duration: number 
 }
+interface Returnstation {
+    return_station: number;
+    count: number;
+}
