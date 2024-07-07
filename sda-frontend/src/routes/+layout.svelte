@@ -27,7 +27,6 @@
 		display: flex;
 		flex-direction: row;
 		justify-content: flex-start;
-		gap: 10px;
 		align-items: center;
 	}
 	.right {
@@ -41,7 +40,7 @@
 		margin-left: 10px;
 	}
 	a {
-		border-radius: 50px;
+		border-radius: 10px;
 		/* border: 3px solid; */
 		padding: 10px;
 		font-size: 1rem;

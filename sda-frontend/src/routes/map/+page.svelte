@@ -7,28 +7,20 @@
         type LatLngExpression,
     } from "leaflet";
     import { onMount } from "svelte";
-    export let data;
+    import { StationMarker } from "$lib/leafletTypes.js";
     import { env } from "$env/dynamic/public";
+    import Search from "$lib/components/Search.svelte";
+    import ReturnList from "$lib/components/ReturnList.svelte";
+    import ResultList from "$lib/components/ResultList.svelte";
 
-    // Extend the Marker class to hold which station it represents
-    // This way we don't have to have a dictionary to translate them between layer id:station id
-    export class StationMarker extends L.Marker {
-        stationId: Number | undefined;
-        constructor(latLng: LatLngExpression, options?: L.MarkerOptions) {
-            super(latLng, options);
-        }
-        setStationId(id: Number): this {
-            this.stationId = id;
-            return this;
-        }
-    }
+    export let data;
 
     let initPos: LatLngExpression = [
         Number(data.stations[0].coordinate_y),
         Number(data.stations[0].coordinate_x),
     ];
     let map: L.Map | undefined;
-    let inpVal = "";
+    let searchTerm = "";
     let selectedStation: StationMarker | undefined = undefined;
     let visibleReturnStations: [station: StationMarker, nrOfTrips: Number][] =
         [];
@@ -145,7 +137,7 @@
                     padding: [20, 20],
                     animate: true,
                 });
-                inpVal = "";
+                searchTerm = "";
             });
 
             marker.on("popupclose", (event) => {
@@ -160,7 +152,7 @@
                         (layer as StationMarker).setOpacity(1);
                     }
                 });
-                inpVal = "";
+                searchTerm = "";
             });
         });
         map?.addLayer(markers);
@@ -171,22 +163,25 @@
     });
     // Search/filter station function
     $: {
-        console.log("search--val: " + inpVal);
+        console.log("search--val: " + searchTerm);
         // To stop overriding opacity when clicking a filtered marker
-        if (inpVal) {
-            markers?.eachLayer((m) => {
-                if (
-                    !(m as L.Marker).options.title
-                        ?.toLowerCase()
-                        .startsWith(inpVal.toLowerCase())
-                ) {
+        markers?.eachLayer((m) => {
+            if (
+                !(m as L.Marker).options.title
+                    ?.toLowerCase()
+                    .startsWith(searchTerm.toLowerCase())
+            ) {
+                if (searchTerm) {
+                    lines.clearLayers();
+                    //   selectedStation?.closePopup();
                     // Här är dom osynliga, men man kan nädå hovra
                     (m as StationMarker).setOpacity(0);
-                } else {
-                    (m as StationMarker).setOpacity(1);
                 }
-            });
-        }
+            } else {
+                (m as StationMarker).setOpacity(1);
+                // (m as StationMarker).setIcon();// Sätta en annan icon?, om vi gör det gör funktion
+            }
+        });
     }
     function sortByNrOfTrips(
         arr: [station: StationMarker, nrOfTrips: Number][],
@@ -203,54 +198,20 @@
 <div id="content">
     <div id="sidebar">
         <div id="search">
-            <label for="stationSearch">Find station</label>
-            <input
-                id="stationSearch"
-                bind:value={inpVal}
-                placeholder="Search..."
-            />
+            <Search bind:searchVar={searchTerm} placeholder="Search stations..." />
             <br style="clear:both;" />
         </div>
-        <p>{inpVal}</p>
 
         <div id="stationList">
             {#if selectedStation}
-                <ul>
-                    <h2>
-                        <a href="/stations/{selectedStation.stationId}">
-                            {selectedStation.options.title}
-                        </a>
-                    </h2>
-                    <p>
-                        Has trips ending at {visibleReturnStations.length} stations
-                    </p>
-                    <table>
-                        <th id="stationCol">Station</th>
-                        <th id="returnsCol">Nr of trips</th>
-
-                        {#each sortByNrOfTrips(visibleReturnStations) as returnStation}
-                            <tr>
-                                <td id="stationCol">
-                                    <a href="/stations/{returnStation[0]
-                                            .stationId}">
-                                        {returnStation[0].options.title}
-                                    </a>
-                                </td>
-                                <td id="returnsCol">
-                                    {returnStation[1]}
-                                </td>
-                            </tr>
-                        {/each}
-                    </table>
-                    <!-- {#each sortByNrOfTrips(visibleReturnStations) as returnStation}
-                        <li>
-                            <a href="/stations/{returnStation[0].stationId}"
-                                >{returnStation[0].options.title}
-                            </a>
-                            {returnStation[1]} trips
-                        </li>
-                    {/each} -->
-                </ul>
+                <ReturnList
+                    returnStations={sortByNrOfTrips(visibleReturnStations)}
+                    station={selectedStation}
+                />
+            {:else if searchTerm}
+                <ResultList />
+            {:else}
+                <p>Nothing</p>
             {/if}
         </div>
     </div>
@@ -267,43 +228,17 @@
         display: flex;
     }
     #sidebar {
-        min-width: 200px;
+        min-width: 250px;
         width: 15%;
         overflow: auto;
         padding: 10px;
-        padding-left: 20px;
-        padding-right: 20px;
     }
     #search {
+        width: 100%;
         display: flex;
-        gap: 3px;
-        flex-direction: column;
-        justify-content: center;
     }
     #map {
         width: 100%;
         height: 100%;
-    }
-    ul {
-        list-style-type: none;
-        padding-left: 0px;
-    }
-    ul li {
-        padding-bottom: 3px;
-    }
-    table {
-        table-layout: fixed;
-        width: 100%;
-    }
-    #returnsCol {
-        text-align: right;
-        text-overflow: ellipsis;
-    }
-    #stationCol {
-        text-align: left;
-        text-overflow: ellipsis;
-        width: 60%;
-        white-space: nowrap;
-        overflow: hidden;
     }
 </style>
