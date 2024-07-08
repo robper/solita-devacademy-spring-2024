@@ -16,18 +16,25 @@
 
 <style>
 	#content {
-		background-color: #f5f5f5;
+		background-color: var(--color-primary);
 		height: calc(100vh - 55px);
 		width: 100vw;
+		z-index: 1;
+		position: relative;
 	}
 	nav {
 		height: 55px;
 		width: 100%;
-		background-color: #ffffff;
+		background-color: var(--color-white);
 		display: flex;
 		flex-direction: row;
 		justify-content: flex-start;
+
+		/* Shadow*/
+		z-index: 2;
+		position: relative;
 		align-items: center;
+		box-shadow: 0px 0px 4px 1px var(--color-gray);
 	}
 	.right {
 		margin-left: auto;
@@ -41,17 +48,16 @@
 	}
 	a {
 		border-radius: 10px;
-		/* border: 3px solid; */
 		padding: 10px;
 		font-size: 1rem;
 		text-decoration: none;
 		color: black;
-		background: white;
 		display: block;
 	}
 	a:hover {
-		background-color: #f1f1f1;
+		background-color: var(--color-secondary);
 	}
+	/* Git logo*/
 	img {
 		height: 25px;
 	}

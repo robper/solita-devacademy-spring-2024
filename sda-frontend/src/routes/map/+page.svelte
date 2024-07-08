@@ -74,8 +74,17 @@
                     returnStationMarker.getLatLng().lng,
                 ],
             ],
-            { color: "red" },
+            {
+                color: "#175a72",
+                weight: 1,
+                interactive: false, // Kan klicka på den och fokusera? orka
+            },
         );
+    }
+    function sortByNrOfTrips(
+        arr: [station: StationMarker, nrOfTrips: Number][],
+    ): [StationMarker, Number][] {
+        return arr.sort((a, b) => (a[1] > b[1] ? -1 : 1));
     }
     onMount(() => {
         data.stations.forEach((station) => {
@@ -183,11 +192,6 @@
             }
         });
     }
-    function sortByNrOfTrips(
-        arr: [station: StationMarker, nrOfTrips: Number][],
-    ): [StationMarker, Number][] {
-        return arr.sort((a, b) => (a[1] > b[1] ? -1 : 1));
-    }
 </script>
 
 <svelte:head>
@@ -196,25 +200,28 @@
 </svelte:head>
 
 <div id="content">
-    <div id="sidebar">
-        <div id="search">
-            <Search bind:searchVar={searchTerm} placeholder="Search stations..." />
-            <br style="clear:both;" />
-        </div>
-
-        <div id="stationList">
-            {#if selectedStation}
-                <ReturnList
-                    returnStations={sortByNrOfTrips(visibleReturnStations)}
-                    station={selectedStation}
+        <div id="sidebar">
+            <div id="search">
+                <Search
+                    bind:searchVar={searchTerm}
+                    placeholder="Search stations..."
                 />
-            {:else if searchTerm}
-                <ResultList />
-            {:else}
-                <p>Nothing</p>
-            {/if}
+                <br style="clear:both;" />
+            </div>
+
+            <div id="stationList">
+                {#if selectedStation}
+                    <ReturnList
+                        returnStations={sortByNrOfTrips(visibleReturnStations)}
+                        station={selectedStation}
+                    />
+                {:else if searchTerm}
+                    <ResultList />
+                {:else}
+                    <p>Nothing</p>
+                {/if}
+            </div>
         </div>
-    </div>
     <div id="map">
         <Map view={initPos} zoom={11} bind:map />
     </div>
@@ -231,7 +238,12 @@
         min-width: 250px;
         width: 15%;
         overflow: auto;
-        padding: 10px;
+        /* padding: 10px; */
+        padding-left: 15px;
+        padding-right: 15px;
+        padding-top: 15px;
+        resize: horizontal;
+        /* display: none; */
     }
     #search {
         width: 100%;

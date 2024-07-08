@@ -11,10 +11,10 @@
         height: 20px;
         border-radius: 10px;
         padding: 10px;
-        background-color: #e6e6e6;
+        background-color: var(--color-secondary);
         outline: none;
         border: 1px solid;
-        border-color: #e6e6e6;
+        border-color: var(--color-secondary);
         background-image: url("/github-mark.png");
         background-position: 7px, 0px;
         background-size: 20px 20px;
@@ -22,7 +22,7 @@
         padding-left: 35px;
     }
     input:focus {
-        border: 1px solid #8f8f8f;
+        border: 1px solid var(--color-gray);
         transition: 0.5s;
     }
 </style>

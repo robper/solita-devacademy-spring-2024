@@ -3,61 +3,86 @@
     export let station: StationMarker;
     export let returnStations: [station: StationMarker, nrOfTrips: Number][] =
         [];
+        
 </script>
-
+<body>
+<h2 id="top">
+    <a href="/stations/{station.stationId}" target="_blank">
+        {station.options.title}
+    </a>
+</h2>
+<p>
+    Has trips ending at {returnStations.length} stations
+</p>
+<section id="tableheader">
+    <p>Station</p>
+    <p># Trips</p>
+</section>
 <ul>
-    <h2>
-        <a href="/stations/{station.stationId}">
-            {station.options.title}
-        </a>
-    </h2>
-    <p>
-        Has trips ending at {returnStations.length} stations
-    </p>
-    <table>
-        <th id="stationCol">Station</th>
-        <th id="returnsCol">Nr of trips</th>
-
-        {#each returnStations as returnStation}
-            <tr>
-                <td id="stationCol">
-                    <a href="/stations/{returnStation[0].stationId}">
-                        {returnStation[0].options.title}
-                    </a>
-                </td>
-                <td id="returnsCol">
-                    {returnStation[1]}
-                </td>
-            </tr>
-        {/each}
-    </table>
+    {#each returnStations as returnStation}
+        <li>
+            <a href="/stations/{returnStation[0].stationId}" target="_blank">
+                <p class="left">{returnStation[0].options.title}</p>
+                <p>{returnStation[1]}</p>
+            </a>
+        </li>
+    {/each}
 </ul>
-
+</body>
 <style>
-    ul {
-        list-style-type: none;
-        padding: 0px;
+    #tableheader {
+        display: flex;
+        justify-content: space-between;
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-top: 0px;
         margin: 0px;
+        border-bottom: 1px solid var(--color-black);
     }
-    ul li {
-        padding-bottom: 3px;
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        /* border-top: 1px solid var(--color-gray); */
+        margin-bottom: 30px;
     }
-    table {
-        table-layout: fixed;
+    li {
+        display: flex;
+        justify-content: space-between;
+        padding-left: 5px;
+        padding-right: 5px;
+        padding-top: 0px;
+        margin: 0px;
+        border-bottom: 1px solid var(--color-gray);
+        /* border-left: 1px solid var(--color-gray); */
+        /* border-right: 1px solid var(--color-gray); */
+    }
+    li:hover {
+        background-color: var(--color-secondary);
+    }
+    li a {
         width: 100%;
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
     }
-    #returnsCol {
-        text-align: right;
-        text-overflow: ellipsis;
-        margin: 0;
+    p {
         padding: 0;
+        margin-bottom: 5px;
+        margin-top: 5px;
     }
-    #stationCol {
-        margin: 0;
-        padding: 0;
-        text-align: left;
+
+    a {
+        text-decoration: none;
+        color: var(--color-black);
+    }
+    a:hover {
+        color: var(--color-gray);
+        border-radius: var(--border-radius);
+        text-decoration: underline;
+    }
+    .left {
         text-overflow: ellipsis;
-        width: 60%;
         white-space: nowrap;
         overflow: hidden;
     }
