@@ -22,7 +22,7 @@
     {#each returnStations as returnStation}
         <li>
             <a href="/stations/{returnStation[0].stationId}" target="_blank">
-                <p class="left">{returnStation[0].options.title}</p>
+                <p class="left">{returnStation[0].stationName}</p>
                 <p>{returnStation[1]}</p>
             </a>
         </li>
