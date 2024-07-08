@@ -67,5 +67,5 @@ docker run --env PUBLIC_BACKEND_API=http://localhost:5221 -p 3000:3000 sda-front
 - Compose networking https://docs.docker.com/compose/networking/ 2 nws
 - Single station view, list all journeys + pagination
 - Docker secrets
-- Sidebar to select/filter stations/journeys
+- Whenhovering, expand the marker
 https://gist.github.com/aradalvand/04b2cad14b00e5ffe8ec96a3afbb34fb
