@@ -19,7 +19,7 @@
 
 <style>
     h2 {
-        /* color: var(--color-black); */
+        color: var(--color-black);
     }
     ul {
         list-style: none;
