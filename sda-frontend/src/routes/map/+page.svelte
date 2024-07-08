@@ -4,7 +4,9 @@
         FeatureGroup,
         Polyline,
         Popup,
+        type FitBoundsOptions,
         type LatLngExpression,
+        type ZoomOptions,
     } from "leaflet";
     import { onMount } from "svelte";
     import { StationMarker } from "$lib/leafletTypes.js";
@@ -15,6 +17,13 @@
 
     export let data;
 
+    const flyToOptions: FitBoundsOptions =
+    {
+        animate: true,
+        duration: 0.5,
+        easeLinearity: 0.5,
+        padding: [10, 10]
+    }
     let initPos: LatLngExpression = [
         Number(data.stations[0].coordinate_y),
         Number(data.stations[0].coordinate_x),
@@ -22,12 +31,17 @@
     let map: L.Map | undefined;
     let searchTerm = "";
     let selectedStation: StationMarker | undefined = undefined;
-    let visibleReturnStations: [station: StationMarker, nrOfTrips: Number][] =
-        [];
+    let visibleReturnStations: [station: StationMarker, nrOfTrips: Number][] = [];
 
-    const markers: FeatureGroup = new FeatureGroup();
-    const lines: FeatureGroup = new FeatureGroup();
+    const allMarkers: FeatureGroup<StationMarker> =new FeatureGroup<StationMarker>();
+    let markers: FeatureGroup<StationMarker> =new FeatureGroup<StationMarker>();
 
+    const lines: FeatureGroup = new FeatureGroup<Polyline>();
+
+    function getVisibleMarkers(): StationMarker[] {
+        let x = allMarkers.getLayers();
+        return x as StationMarker[];
+    }
     function createStationMarker(station: Station): StationMarker {
         return new StationMarker(
             [Number(station.coordinate_y), Number(station.coordinate_x)],
@@ -91,15 +105,15 @@
             let marker = createStationMarker(station);
             let popup = createPopup(station);
             let tooltip = new L.Tooltip({
-                content: "<strong>" + station.station_name + "<strong>",
-                // direction: 'center',
-                // offset: [-14, -30]
+                content: "<strong>" + station.station_name + "<strong>"
             });
             marker.bindTooltip(tooltip);
             marker.bindPopup(popup);
             markers.addLayer(marker);
+            allMarkers.addLayer(marker);
 
             marker.on("popupopen", async (event) => {
+                searchTerm = "";
                 // Stop moving the view
                 // Else it will be janky if we select another marker while one is selected
                 map?.stop();
@@ -118,20 +132,20 @@
                 console.log("# Returnstations: ", returnStations.length);
 
                 // Remove all markers except the one selected
-                markers.eachLayer((layer) => {
+                allMarkers.eachLayer((layer) => {
                     let returnStation = returnStations.find(
                         (r) =>
                             r.return_station ===
                             (layer as StationMarker).stationId,
                     );
                     if (layer === targetMarker || returnStation) {
-                        (layer as StationMarker).setOpacity(1);
+                        markers.addLayer(layer);
                         visibleReturnStations.push([
                             layer as StationMarker,
                             Number(returnStation?.count),
                         ]);
                     } else {
-                        (layer as StationMarker).setOpacity(0.4);
+                        markers.removeLayer(layer);
                     }
                 });
                 // Have to re-assign the array to 'force' reactivity on it
@@ -140,13 +154,11 @@
                 map?.addLayer(lines);
                 returnStations.forEach((returnStation) => {
                     createPolyLine(targetMarker, returnStation).addTo(lines);
-                    // https://github.com/IvanSanchez/Leaflet.Polyline.SnakeAnim
                 });
-                map?.flyToBounds(lines.getBounds(), {
-                    padding: [20, 20],
-                    animate: true,
-                });
-                searchTerm = "";
+                map?.flyToBounds(lines.getBounds(), flyToOptions);
+
+                console.log(markers.getLayers().length);
+                console.log(allMarkers.getLayers().length);
             });
 
             marker.on("popupclose", (event) => {
@@ -154,43 +166,48 @@
                 selectedStation = undefined;
                 visibleReturnStations = [];
                 lines.clearLayers();
-                map?.flyToBounds(markers.getBounds());
-                markers.eachLayer((layer) => {
+                allMarkers.eachLayer((layer) => {
                     if (layer === event.target) {
                     } else {
-                        (layer as StationMarker).setOpacity(1);
+                        markers.addLayer(layer);
                     }
                 });
-                searchTerm = "";
+                map?.flyToBounds(markers.getBounds(), flyToOptions);
             });
         });
         map?.addLayer(markers);
-        map?.flyToBounds(markers.getBounds());
+        map?.flyToBounds(markers.getBounds(), flyToOptions);
         // DEV / TEST
-        selectedStation = markers.getLayers()[0] as StationMarker;
-        selectedStation.openPopup();
+        // selectedStation = markers.getLayers()[0] as StationMarker;
+        // selectedStation.openPopup();
     });
     // Search/filter station function
     $: {
         console.log("search--val: " + searchTerm);
         // To stop overriding opacity when clicking a filtered marker
-        markers?.eachLayer((m) => {
+        allMarkers?.eachLayer((m) => {
             if (
-                !(m as L.Marker).options.title
+                !(m as StationMarker).options.title
                     ?.toLowerCase()
                     .startsWith(searchTerm.toLowerCase())
             ) {
                 if (searchTerm) {
+                    selectedStation?.closePopup();
+                    markers.removeLayer(m);
                     lines.clearLayers();
-                    //   selectedStation?.closePopup();
-                    // Här är dom osynliga, men man kan nädå hovra
-                    (m as StationMarker).setOpacity(0);
                 }
             } else {
-                (m as StationMarker).setOpacity(1);
-                // (m as StationMarker).setIcon();// Sätta en annan icon?, om vi gör det gör funktion
+                markers.addLayer(m);
             }
         });
+        console.log(markers.getLayers().length);
+        console.log(allMarkers.getLayers().length);
+    }
+    // When searching, reassign markers array to trigger reactivity for resultlist
+    // This is not the way to do it
+    $: {
+        console.log(searchTerm);
+        markers = markers;
     }
 </script>
 
@@ -200,28 +217,28 @@
 </svelte:head>
 
 <div id="content">
-        <div id="sidebar">
-            <div id="search">
-                <Search
-                    bind:searchVar={searchTerm}
-                    placeholder="Search stations..."
-                />
-                <br style="clear:both;" />
-            </div>
-
-            <div id="stationList">
-                {#if selectedStation}
-                    <ReturnList
-                        returnStations={sortByNrOfTrips(visibleReturnStations)}
-                        station={selectedStation}
-                    />
-                {:else if searchTerm}
-                    <ResultList />
-                {:else}
-                    <p>Nothing</p>
-                {/if}
-            </div>
+    <div id="sidebar">
+        <div id="search">
+            <Search
+                bind:searchVar={searchTerm}
+                placeholder="Search stations..."
+            />
+            <!-- <br style="clear:both;" /> -->
         </div>
+
+        <div id="stationList">
+            {#if selectedStation}
+                <ReturnList
+                    returnStations={sortByNrOfTrips(visibleReturnStations)}
+                    station={selectedStation}
+                />
+            {:else if searchTerm}
+                <ResultList selection={getVisibleMarkers()} />
+            {:else}
+                <p>Nothing</p>
+            {/if}
+        </div>
+    </div>
     <div id="map">
         <Map view={initPos} zoom={11} bind:map />
     </div>
