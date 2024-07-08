@@ -15,9 +15,9 @@
         outline: none;
         border: 1px solid;
         border-color: var(--color-secondary);
-        background-image: url("/github-mark.png");
+        background-image: url("/search.png");
         background-position: 7px, 0px;
-        background-size: 20px 20px;
+        background-size: 18px 18px;
         background-repeat: no-repeat;
         padding-left: 35px;
     }
