@@ -1,18 +1,18 @@
 interface Station {
-    id: number 
-    station_name: string | null;
-    station_address: string | null;
-    coordinate_x: string | null;
-    coordinate_y: string | null;
+    id: number
+    station_name: string | undefined;
+    station_address: string | undefined;
+    coordinate_x: string | undefined;
+    coordinate_y: string | undefined;
 }
 interface Journey {
-    id: number 
-    departure_date_time: string | null;
-    return_date_time: string | null;
+    id: number
+    departure_date_time: string | undefined;
+    return_date_time: string | undefined;
     departure_station_id: number;
     return_station_id: number;
-    distance: number 
-    duration: number 
+    distance: number
+    duration: number
 }
 interface Returnstation {
     return_station: number;
