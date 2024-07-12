@@ -39,9 +39,7 @@
 
     const lines: FeatureGroup = new FeatureGroup<Polyline>();
 
-    function castFGToArr(
-        featureGroup: FeatureGroup<StationMarker>,
-    ): StationMarker[] {
+    function castFGToArr(featureGroup: FeatureGroup<StationMarker>): Station[] {
         let x = featureGroup.getLayers();
         return x as StationMarker[];
     }
@@ -76,7 +74,7 @@
             .getLayers()
             .find(
                 (layer) =>
-                    (layer as StationMarker).stationId ===
+                    (layer as StationMarker).id ===
                     returnStation.return_station,
             ) as StationMarker;
 
@@ -126,11 +124,11 @@
                 let targetMarker = event.target as StationMarker;
                 selectedStation = targetMarker;
                 console.log("Marker: ", targetMarker);
-                console.log("Marker station-id: ", targetMarker.stationId);
+                console.log("Marker station-id: ", targetMarker.id);
 
                 // Fetch return stations
                 let returnStationsResp = await fetch(
-                    `${env.PUBLIC_BACKEND_API}/stations/${targetMarker.stationId}/depatures/returnstations`,
+                    `${env.PUBLIC_BACKEND_API}/stations/${targetMarker.id}/depatures/returnstations`,
                 );
                 let returnStations: Returnstation[] =
                     await returnStationsResp.json();
@@ -139,9 +137,7 @@
                 // Remove all markers except the one selected
                 allMarkers.eachLayer((layer) => {
                     let returnStation = returnStations.find(
-                        (r) =>
-                            r.return_station ===
-                            (layer as StationMarker).stationId,
+                        (r) => r.return_station === (layer as StationMarker).id,
                     );
                     if (layer === targetMarker || returnStation) {
                         markers.addLayer(layer);
@@ -190,7 +186,7 @@
         allMarkers?.eachLayer((m) => {
             if (
                 // !(m as StationMarker).options.title
-                !(m as StationMarker).stationName
+                !(m as StationMarker).station_name
                     ?.toLowerCase()
                     .startsWith(searchTerm.toLowerCase())
             ) {
@@ -228,7 +224,8 @@
 
         <div id="stationList">
             {#if selectedStation}
-                <ReturnList returnStations={sortByNrOfTrips(visibleReturnStations)}
+                <ReturnList
+                    returnStations={sortByNrOfTrips(visibleReturnStations)}
                     station={selectedStation}
                 />
             {:else if searchTerm}
