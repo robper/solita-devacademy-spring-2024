@@ -8,9 +8,8 @@
 <style>
     input {
         width: inherit;
-        height: 20px;
+        /* height: 20px; */
         border-radius: 10px;
-        padding: 10px;
         background-color: var(--color-secondary);
         outline: none;
         border: 1px solid;
@@ -20,6 +19,9 @@
         background-size: 18px 18px;
         background-repeat: no-repeat;
         padding-left: 35px;
+        padding-right: 10px;
+        padding-top: 10px;
+        padding-bottom: 10px;
     }
     input:focus {
         border: 1px solid var(--color-gray);
