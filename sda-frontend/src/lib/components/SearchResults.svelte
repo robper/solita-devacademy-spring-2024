@@ -1,21 +1,17 @@
 <script lang="ts">
-    import type { StationMarker } from "$lib/leafletTypes";
-
-    export let selection: StationMarker[];
+    export let selection: Station[];
 </script>
 
-    <h2 id="top">
-        Stations
-    </h2>
-    <ul>
-        {#each selection as station}
-            <li>
-                <a href="/stations/{station.stationId}" target="_blank">
-                    <p class="left">{station.stationName}</p>
-                </a>
-            </li>
-        {/each}
-    </ul>
+<h2 id="top">Stations</h2>
+<ul>
+    {#each selection as station}
+        <li>
+            <a href="/stations/{station.id}" target="_blank">
+                <p class="left">{station.station_name}</p>
+            </a>
+        </li>
+    {/each}
+</ul>
 
 <style>
     h2 {
@@ -25,13 +21,13 @@
         list-style: none;
         padding: 0;
         margin: 0;
-        margin-bottom: 30px;
+        /* margin-bottom: 30px; */
     }
     li {
         display: flex;
         justify-content: space-between;
-        padding-left: 5px;
-        padding-right: 5px;
+        padding-left: 0px;
+        padding-right: 0px;
         padding-top: 0px;
         margin: 0px;
         border-bottom: 1px solid var(--color-gray);

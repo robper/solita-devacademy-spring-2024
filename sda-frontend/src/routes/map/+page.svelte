@@ -12,7 +12,7 @@
     import { env } from "$env/dynamic/public";
     import Search from "$lib/components/Search.svelte";
     import ReturnList from "$lib/components/ReturnList.svelte";
-    import ResultList from "$lib/components/ResultList.svelte";
+    import SearchResults from "$lib/components/SearchResults.svelte";
 
     export let data;
 
@@ -229,7 +229,7 @@
                     station={selectedStation}
                 />
             {:else if searchTerm}
-                <ResultList selection={castFGToArr(markers)} />
+                <SearchResults selection={castFGToArr(markers)} />
             {/if}
         </div>
     </div>
@@ -252,6 +252,7 @@
         padding-left: 15px;
         padding-right: 15px;
         padding-top: 15px;
+        padding-bottom: 30px;
     }
     #search {
         width: 100%;
