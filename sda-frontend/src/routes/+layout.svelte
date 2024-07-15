@@ -5,7 +5,11 @@
 		<a href="/map">Map</a>
 	</div>
 	<div class="right">
-		<a class="icon" href="https://github.com" target="_blank">
+		<a
+			class="icon"
+			href="https://github.com/robper/solita-devacademy-spring-2024"
+			target="_blank"
+		>
 			<img src="/github-mark.png" alt="git" />
 		</a>
 	</div>
