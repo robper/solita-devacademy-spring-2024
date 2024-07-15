@@ -247,7 +247,7 @@
     }
     #sidebar {
         min-width: 250px;
-        width: 15%;
+        width: 20%;
         overflow: auto;
         padding-left: 15px;
         padding-right: 15px;
@@ -259,7 +259,7 @@
         display: flex;
     }
     #map {
-        width: 100%;
+        width: 80%;
         height: 100%;
     }
 </style>

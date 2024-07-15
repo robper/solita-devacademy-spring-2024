@@ -10,10 +10,10 @@
         width: inherit;
         /* height: 20px; */
         border-radius: 10px;
-        background-color: var(--color-secondary);
+        background-color: var(--color-shade);
         outline: none;
         border: 1px solid;
-        border-color: var(--color-secondary);
+        border-color: var(--color-text);
         background-image: url("/search.png");
         background-position: 7px, 0px;
         background-size: 18px 18px;
@@ -22,9 +22,10 @@
         padding-right: 10px;
         padding-top: 10px;
         padding-bottom: 10px;
+        border: 1px solid var(--color-shade);
     }
     input:focus {
-        border: 1px solid var(--color-gray);
+        border: 1px solid var(--color-text);
         transition: 0.5s;
     }
 </style>

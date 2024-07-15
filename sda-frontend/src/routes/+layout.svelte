@@ -16,7 +16,6 @@
 
 <style>
 	#content {
-		background-color: var(--color-primary);
 		height: calc(100vh - 55px);
 		width: 100vw;
 		z-index: 1;
@@ -25,7 +24,7 @@
 	nav {
 		height: 55px;
 		width: 100%;
-		background-color: var(--color-white);
+		background-color: var(--color-foreground);
 		display: flex;
 		flex-direction: row;
 		justify-content: flex-start;
@@ -34,7 +33,7 @@
 		z-index: 2;
 		position: relative;
 		align-items: center;
-		box-shadow: 0px 0px 4px 1px var(--color-gray);
+		box-shadow: 0px 0px 4px 1px var(--color-shade);
 	}
 	.right {
 		margin-left: auto;
@@ -51,11 +50,7 @@
 		padding: 10px;
 		font-size: 1rem;
 		text-decoration: none;
-		color: black;
 		display: block;
-	}
-	a:hover {
-		background-color: var(--color-secondary);
 	}
 	/* Git logo*/
 	img {

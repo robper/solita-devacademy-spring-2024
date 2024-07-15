@@ -14,47 +14,26 @@
 </ul>
 
 <style>
-    h2 {
-        color: var(--color-black);
-    }
     ul {
         list-style: none;
         padding: 0;
         margin: 0;
-        /* margin-bottom: 30px; */
     }
     li {
         display: flex;
-        justify-content: space-between;
         padding-left: 0px;
         padding-right: 0px;
         padding-top: 0px;
         margin: 0px;
-        border-bottom: 1px solid var(--color-gray);
-    }
-    li:hover {
-        background-color: var(--color-secondary);
+        border-bottom: 1px solid var(--color-shade);
     }
     li a {
         width: 100%;
-        display: flex;
-        justify-content: space-between;
-        gap: 10px;
     }
     ul p {
         padding: 0;
         margin-bottom: 5px;
         margin-top: 5px;
-    }
-
-    a {
-        text-decoration: none;
-        color: var(--color-black);
-    }
-    a:hover {
-        color: var(--color-gray);
-        border-radius: var(--border-radius);
-        text-decoration: underline;
     }
     .left {
         text-overflow: ellipsis;

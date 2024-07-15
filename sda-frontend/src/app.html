@@ -16,18 +16,44 @@
 </html>
 <style>
 	:root {
-		--color-primary: #f7f7f7;
-		--color-secondary: #e6e6e6;
+		--acolor-primary: #f7f7f7;
+		--acolor-secondary: #e6e6e6;
+		--acolor-white: #ffffff;
+		--acolor-gray: #8f8f8f;
+		--acolor-black: #242424;
+
+
+		/* Background */
+		--color-background: #f3f3f3;
+		/* Foreground */
+		--color-foreground: #fcfcfc;
+		/* Popout */
+		--color-popout: #eaeaea;
+		/* --color-popout: #f0f0f0; */
+		/* Text*/
+		--color-text: #222222;
+		/* Shade */
+		--color-shade: #e9e9e9;
+		/* White */
 		--color-white: #ffffff;
-		--color-gray: #8f8f8f;
-		--color-black: #242424;
 		--border-radius: 10px;
 	}
 
 	body {
-		background-color: var(--color-primary);
+		background-color: var(--color-background);
 		margin: 0px;
 		padding: 0px;
+		color: var(--color-text);
+	}
+
+	a {
+		color: var(--color-text);
+		text-decoration: none;
+	}
+
+	a:hover {
+		background-color: var(--color-popout);
+		text-decoration: underline;
 	}
 
 	* {
