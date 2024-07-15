@@ -18,3 +18,10 @@ interface Returnstation {
     return_station: number;
     count: number;
 }
+interface SingleStationData {
+    station: Station;
+    depatures_count: number;
+    depatures_distance: number;
+    depatures_duration: number;
+    returns_count: number;
+}

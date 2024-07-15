@@ -1,8 +1,6 @@
 import { env } from '$env/dynamic/public';
 
-export async function load({ params }) {
-    console.log(params);
-    console.log('Backend api url: ', env.PUBLIC_BACKEND_API);
+export async function load({ params }): Promise<SingleStationData> {
     let station = await fetch(`${env.PUBLIC_BACKEND_API}/stations/${params.station}`);
     let dep_count = await fetch(`${env.PUBLIC_BACKEND_API}/stations/${params.station}/depatures/count`);
     let dep_dist = await fetch(`${env.PUBLIC_BACKEND_API}/stations/${params.station}/depatures/distance`);

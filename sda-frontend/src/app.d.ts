@@ -5,9 +5,12 @@ declare global {
 		// interface Error {}
 		// interface Locals {}
 		// interface PageData {}
-		// interface PageState {}
+		// Extends eller implements min typ
+		interface PageState {
+			selected: SingleStationData;
+		}
 		// interface Platform {}
 	}
 }
 
-export {};
+export { };
