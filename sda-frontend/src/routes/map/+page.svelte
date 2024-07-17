@@ -247,19 +247,16 @@
     }
     #sidebar {
         min-width: 250px;
-        width: 20%;
+        width: 15%;
         overflow: auto;
-        padding-left: 15px;
-        padding-right: 15px;
-        padding-top: 15px;
-        padding-bottom: 30px;
+        padding: 1rem 1rem 2rem 1rem;
     }
     #search {
         width: 100%;
         display: flex;
     }
     #map {
-        width: 80%;
+        width: 85%;
         height: 100%;
     }
 </style>

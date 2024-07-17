@@ -34,27 +34,32 @@
 		justify-content: flex-start;
 
 		/* Shadow*/
-		z-index: 2;
+		z-index: 10;
 		position: relative;
 		align-items: center;
 		box-shadow: 0px 0px 4px 1px var(--color-shade);
 	}
-	.right {
+	nav .right {
 		margin-left: auto;
 		margin-right: 10px;
 	}
-	.left {
+	nav .left {
 		display: flex;
 		justify-content: flex-start;
 		gap: 5px;
 		margin-left: 10px;
 	}
-	a {
-		border-radius: 10px;
-		padding: 10px;
-		font-size: 1rem;
-		text-decoration: none;
+	nav a {
+		border-radius: 5px;
 		display: block;
+		padding-left: 10px;
+		padding-right: 10px;
+		padding-top: 10px;
+		padding-bottom: 10px;
+		text-decoration: none;
+	}
+	nav a:hover {
+		background-color: var(--color-popout);
 	}
 	/* Git logo*/
 	img {

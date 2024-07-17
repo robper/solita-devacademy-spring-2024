@@ -6,8 +6,13 @@
     export let data;
 </script>
 
-<div id="stations">
-    <div id="sr">
+<svelte:head>
+    <title>Stations</title>
+    <meta name="description" content="Stations" />
+</svelte:head>
+
+<div id="content">
+    <div id="stations-list">
         <h2 id="top">Stations</h2>
         <ul>
             {#each data.stations as station}
@@ -57,13 +62,14 @@
                             }
                         }}
                     >
-                        <p>{station.station_name}</p>
+                        <!-- <p>{station.station_name}</p> -->
+                        {station.station_name}
                     </a>
                 </li>
             {/each}
         </ul>
     </div>
-    <div id="single">
+    <div id="single-station">
         {#if $page.state.selected}
             <StationPage data={$page.state.selected} />
         {/if}
@@ -71,46 +77,44 @@
 </div>
 
 <style>
-    #stations {
+    #content {
         display: flex;
         flex-direction: row;
         justify-content: flex-start;
     }
-    #sr {
+    #stations-list {
         min-width: 250px;
-        width: 20%;
+        width: 15%;
         height: calc(100vh - 55px);
         overflow: scroll;
-        padding-left: 15px;
-        padding-right: 15px;
-        padding-bottom: 30px;
+        padding: 0rem 1rem 2rem 1rem;
         border-right: 1px solid var(--color-shade);
     }
-    #single {
+    #single-station {
         padding-left: 15px;
-        width: 80%;
+        width: 85%;
         min-width: 250px;
         background-color: var(--color-foreground);
     }
     ul {
+        margin: 0;
         list-style: none;
         padding: 0;
-        margin: 0;
     }
     li {
-        display: flex;
-        padding-left: 0px;
-        padding-right: 0px;
-        padding-top: 0px;
-        margin: 0px;
-        border-bottom: 1px solid var(--color-shade);
+        padding: 0;
+        margin: 0px -0.5rem 1px -0.5rem;
     }
     li a {
+        border-radius: 5px;
+        display: block;
+        margin: 0;
+        padding: 0.25rem 0.5rem;
+        text-decoration: none;
         width: 100%;
     }
-    ul p {
-        padding: 0;
-        margin-bottom: 5px;
-        margin-top: 5px;
+    li a:hover {
+        background-color: var(--color-popout);
+        text-decoration: none;
     }
 </style>

@@ -31,7 +31,6 @@
     setContext("map", {
         getMap: () => map,
     });
-
 </script>
 
 <div class="map" bind:this={mapElement}>
@@ -44,5 +43,6 @@
     .map {
         width: auto;
         height: 100%;
+        border-radius: 5px;
     }
 </style>

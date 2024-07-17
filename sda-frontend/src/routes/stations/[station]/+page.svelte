@@ -16,8 +16,13 @@
     });
 </script>
 
+<svelte:head>
+    <title>{data.station.station_name}</title>
+    <meta name="description" content={data.station.station_name} />
+</svelte:head>
+
 <h2>
-    <a href="/stations/{data.station.id}">{data.station.station_name}</a>
+    {data.station.station_name}
 </h2>
 <p>
     Address
@@ -33,9 +38,9 @@
 </div>
 <h3>Journeys</h3>
 <p>
-    {data.depatures_count} starting from here with an avg distance of ~{Math.round(
+    {data.depatures_count} starting from here with an avg. distance of ~{Math.round(
         data.depatures_distance,
-    )}m and an avg duration of ~{Math.round(data.depatures_duration)}s
+    )}m and an avg. duration of ~{Math.round(data.depatures_duration)}s
 </p>
 <p>{data.returns_count} ending here</p>
 
@@ -43,5 +48,8 @@
     #map {
         width: 300px;
         height: 300px;
+    }
+    a:hover {
+        background-color: var(--color-foreground);
     }
 </style>
