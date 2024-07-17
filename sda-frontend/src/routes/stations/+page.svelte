@@ -2,8 +2,29 @@
     import { preloadData, pushState, goto } from "$app/navigation";
     import { page } from "$app/stores";
     import StationPage from "./[station]/+page.svelte";
-
     export let data;
+    async function loadReqStation() {
+        const { href } = new URL(
+            data.requestedUrl + `/stations/${data.requestedStation}`,
+        );
+        const result = await preloadData(href);
+        console.log("result", result);
+        if (result.type === "loaded" && result.status === 200) {
+            /* pushState("", { selected: result.data }); */
+            pushState("", {
+                selected: {
+                    station: result.data.station,
+                    depatures_count: result.data.depatures_count,
+                    depatures_distance: result.data.depatures_distance,
+                    depatures_duration: result.data.depatures_duration,
+                    returns_count: result.data.returns_count,
+                },
+            });
+        }
+    }
+    if (data.requestedStation && data.requestedUrl) {
+        loadReqStation();
+    }
 </script>
 
 <svelte:head>
