@@ -28,6 +28,7 @@
     });
 
     // Context allows us to have multiple instances of this component
+    // This is unused, we export map instead
     setContext("map", {
         getMap: () => map,
     });
