@@ -40,7 +40,7 @@
 <div id="map">
     <!-- Force recreation of the map when selected station changes -->
     {#key data.station}
-        <Map view={initPos} zoom={17} bind:map />
+        <Map view={initPos} zoom={13} bind:map />
     {/key}
 </div>
 <h3>Journeys</h3>
