@@ -1,19 +1,23 @@
 <script lang="ts">
     import Map from "$lib/components/Map.svelte";
-    import { Marker, type LatLngExpression } from "leaflet";
-    import { onMount } from "svelte";
+    import L, { Marker, type LatLngExpression } from "leaflet";
 
     export let data;
 
-    export let initPos: LatLngExpression = [
+    let initPos: LatLngExpression = [
         Number(data.station.coordinate_y),
         Number(data.station.coordinate_x),
     ];
 
     let map: L.Map | undefined;
-    onMount(() => {
+
+    $: {
+        initPos = [
+            Number(data.station.coordinate_y),
+            Number(data.station.coordinate_x),
+        ];
         map?.addLayer(new Marker(initPos));
-    });
+    }
 </script>
 
 <svelte:head>
@@ -34,7 +38,10 @@
     </a>
 </p>
 <div id="map">
-    <Map view={initPos} zoom={11} bind:map />
+    <!-- Force recreation of the map when selected station changes -->
+    {#key data.station}
+        <Map view={initPos} zoom={17} bind:map />
+    {/key}
 </div>
 <h3>Journeys</h3>
 <p>

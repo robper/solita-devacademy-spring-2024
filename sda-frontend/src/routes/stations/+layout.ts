@@ -1,7 +1,6 @@
 import { env } from '$env/dynamic/public';
-export const ssr = false; // For leaflet on single page view, 
-//since we're importing single page, this needs to be csr too.
-export async function load({ url }) {
+
+export async function load({ }) {
 	let response = await fetch(`${env.PUBLIC_BACKEND_API}/stations`);
 	let stations = await response.json() as Station[];
 	return {
@@ -16,8 +15,6 @@ export async function load({ url }) {
 				return 1;
 			}
 			return 0;
-		}),
-		requestedStation: url.searchParams.get('station'),
-		requestedUrl: url.origin
+		})
 	};
 }
