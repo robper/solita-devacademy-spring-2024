@@ -1,5 +1,10 @@
 <script lang="ts">
+    import { page } from "$app/stores";
+
     export let data;
+    let path: string | undefined;
+
+    $: path = $page.url.pathname;
 </script>
 
 <div id="stations-layout">
@@ -7,7 +12,11 @@
         <h2 id="top">Stations</h2>
         <ul>
             {#each data.stations as station}
-                <li>
+                <li
+                    class={path === `/stations/${station.id}`
+                        ? "active"
+                        : undefined}
+                >
                     <a href="/stations/{station.id}">
                         {station.station_name}
                     </a>
@@ -61,5 +70,9 @@
     li a:hover {
         background-color: var(--color-popout);
         text-decoration: none;
+        transition-duration: 0.1s;
+    }
+    li.active a {
+        background-color: var(--color-shade);
     }
 </style>
