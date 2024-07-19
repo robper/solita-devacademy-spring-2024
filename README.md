@@ -1,6 +1,4 @@
-# This repo
-
-This repo includes:
+This repo:
 
 - Database
 
@@ -31,7 +29,7 @@ Services exposed to host:
 
 - [Docker](https://www.docker.com/community-edition#/download)
 - [Docker Compose](https://docs.docker.com/compose/install/)  
-(Podman works too)
+(or Podman with docker-compose, Podman compoes does not work)
 
 Clone the repo
 
@@ -87,14 +85,25 @@ Overall:
 Backend:
 
 - Pagination for journeys
+- Test
 
 Single Station:
 
-- List all journeys
+- List all journeys, there's space to the right
 
 Map:
 
 - When hovering or selecting a station in the sidebar, expand the marker
+
+# Conclusions
+
+CSS is still annoying.
+80% of JS time is spent on small things and edge-cases.
+
+If I were to use Leaflet again, I would probably use something like:  
+<https://github.com/ShipBit/sveltekit-leaflet>  
+<https://github.com/ngyewch/svelte-leafletjs>  
+<https://github.com/imIfOu/svelte-map-leaflet>  
 
 # References
 
