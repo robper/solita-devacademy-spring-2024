@@ -14,12 +14,12 @@
 		</a>
 	</div>
 </nav>
-<div id="content">
+<main>
 	<slot />
-</div>
+</main>
 
 <style>
-	#content {
+	main {
 		height: calc(100vh - 55px);
 		width: 100vw;
 		z-index: 1;
