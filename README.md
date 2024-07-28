@@ -39,6 +39,8 @@ Run using docker compose
 
     docker compose up --build
 
+This require ~850MB of HDD space, for whatever reason.
+
 # Build from source
 
 ## Requirements
