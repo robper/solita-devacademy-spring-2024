@@ -37,7 +37,7 @@ Clone the repo
 
 Run using docker compose
 
-    docker compose up
+    docker compose up --build
 
 # Build from source
 
@@ -78,14 +78,12 @@ Or with docker
 
 Overall:
 
-- Error handling
-- [Compose networking](https://docs.docker.com/compose/networking/) Frontend/backend NW
-- Docker secrets
+- Error handling front- and backend
 
 Backend:
 
-- Pagination for journeys
-- Test
+- List & pagination for journeys
+- Tests to check that the database was imported correctly
 
 Single Station:
 
@@ -97,13 +95,16 @@ Map:
 
 # Conclusions
 
-CSS is still annoying.
-80% of JS time is spent on small things and edge-cases.
+CSS is still annoying.  
+80% of JS time is spent on small things and edge-cases.  
+Not sure about Typescript, it's neat but sometimes requires you to do alot of things to achieve very little change.
 
 If I were to use Leaflet again, I would probably use something like:  
 <https://github.com/ShipBit/sveltekit-leaflet>  
 <https://github.com/ngyewch/svelte-leafletjs>  
 <https://github.com/imIfOu/svelte-map-leaflet>  
+But probably I'd use Mapbox, Maptiler or similar.
+
 
 # References
 
