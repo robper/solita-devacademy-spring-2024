@@ -1,3 +1,6 @@
+<script lang="ts">
+    import gitlogo from "$lib/assets/github-mark.png";
+</script>
 <nav>
 	<div class="left">
 		<a href="/">Home</a>
@@ -10,7 +13,7 @@
 			href="https://github.com/robper/solita-devacademy-spring-2024"
 			target="_blank"
 		>
-			<img src="/github-mark.png" alt="git" />
+			<img src={gitlogo} alt="git" />
 		</a>
 	</div>
 </nav>
