@@ -38,7 +38,9 @@
         iconUrl: markericon,
         shadowUrl: markershadow,
         iconAnchor: [12, 40],
-        shadowAnchor: [12, 40]
+        shadowAnchor: [12, 40], 
+        tooltipAnchor: [12, -25],
+        popupAnchor: [0, -37],
     });
 
     const allMarkers: FeatureGroup<StationMarker> =
