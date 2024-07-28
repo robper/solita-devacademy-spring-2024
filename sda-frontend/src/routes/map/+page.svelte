@@ -2,6 +2,7 @@
     import Map from "$lib/components/Map.svelte";
     import L, {
         FeatureGroup,
+        Icon,
         Polyline,
         Popup,
         type FitBoundsOptions,
@@ -13,6 +14,8 @@
     import Search from "$lib/components/Search.svelte";
     import ReturnList from "$lib/components/ReturnList.svelte";
     import SearchResults from "$lib/components/SearchResults.svelte";
+    import markericon from "$lib/assets/marker-icon.png";
+    import markershadow from "$lib/assets/marker-shadow.png";
 
     export let data;
 
@@ -31,6 +34,12 @@
     let selectedStation: StationMarker | undefined = undefined;
     let visibleReturnStations: [station: StationMarker, nrOfTrips: Number][] =
         [];
+    const icon = new Icon({            
+        iconUrl: markericon,
+        shadowUrl: markershadow,
+        iconAnchor: [12, 40],
+        shadowAnchor: [12, 40]
+    });
 
     const allMarkers: FeatureGroup<StationMarker> =
         new FeatureGroup<StationMarker>();
@@ -49,6 +58,7 @@
             {
                 alt: station.station_name ?? "Unnamed Station",
                 title: station.station_name ?? "Unnamed Station",
+                icon: icon
             },
         );
     }

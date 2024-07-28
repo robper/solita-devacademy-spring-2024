@@ -1,6 +1,8 @@
 <script lang="ts">
     import Map from "$lib/components/Map.svelte";
-    import L, { Marker, type LatLngExpression } from "leaflet";
+    import L, { Icon, Marker, type LatLngExpression } from "leaflet";
+    import markericon from "$lib/assets/marker-icon.png";
+    import markershadow from "$lib/assets/marker-shadow.png";
 
     export let data;
 
@@ -10,13 +12,24 @@
     ];
 
     let map: L.Map | undefined;
-
+    const icon = new Icon({
+        iconUrl: markericon,
+        shadowUrl: markershadow,
+        iconAnchor: [12, 40],
+        shadowAnchor: [12, 40],
+    });
     $: {
         initPos = [
             Number(data.station.coordinate_y),
             Number(data.station.coordinate_x),
         ];
-        map?.addLayer(new Marker(initPos));
+        map?.addLayer(
+            new Marker(initPos, {
+                title: "asdf",
+                alt: data.station.station_name,
+                icon: icon,
+            }),
+        );
     }
 </script>
 
