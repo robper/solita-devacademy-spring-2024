@@ -2,7 +2,7 @@ This repo contains a 'fullstack' web application built using C#, ASP.NET, Svelte
 The data consists of bike stations and bike journeys, which start and end at a station.
 The data and 'assignment' is described provided here: [/db/Readme](https://github.com/robper/solita-devacademy-spring-2024/blob/master/db/README.md), or [here](https://github.com/solita/dev-academy-spring-2024-exercise).
 
-I have no affiliation with Solita, nor did i participate or send in this to their academy, I just wanted something to do.
+I have no affiliation with Solita, nor did i participate or send in this to their academy, I just wanted something to do and try Sveltekit.
 
 # Screenshots
 ![image](https://github.com/user-attachments/assets/cbe753b5-1a0f-44b8-ad21-c6eed543501e)
@@ -14,7 +14,7 @@ I have no affiliation with Solita, nor did i participate or send in this to thei
 
 - Database
 
-    It contains stations and bike journeys inbetween these stations.
+    Contains stations and bike journeys inbetween these stations.
     Data is loaded at build using a tarball.
 - API
 
@@ -33,7 +33,7 @@ The entire project can be run using a docker compose file is provided.
 Services accessible on host:  
 
 >Backend/API: <http://localhost:5221>  
->Frontend/Web: <http://localhost:3000>
+>Frontend/Web: <http://localhost:3000>  
 >Adminer: <http://localhost:8088>
 
 ## Requirements
@@ -82,8 +82,11 @@ Run:
 Or with docker
 
     docker run --env PUBLIC_BACKEND_API=http://localhost:5221 -p 3000:3000 sda-frontend
+# Problems
 
-# TODO / Can-do
+The database does sometimes not load on first build.
+
+# TODO / Can-do / Will-not-do
 
 Overall:
 
@@ -93,7 +96,6 @@ Overall:
 Backend:
 
 - List & pagination for journeys
-- Tests to check that the database was imported correctly, this fails sometimes on first build
 
 Single Station:
 
